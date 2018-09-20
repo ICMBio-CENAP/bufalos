@@ -53,7 +53,7 @@ central.setor <- subset(bufalo, setor=="Piratuba_central")
 # piratuba exceto central, area.sector <- 3924.69-1601.18
 
 # Source this file: fuctions double.count and boot.ci to estimate pop size and confidence intervals
-source("double_count_sem_subsets.R")
+source("double_count_function.R")
 
 double.count (piratuba, 1,181, 2616.46) # extrapola densidade para 2/3 da reserva
 ci.count(piratuba,1,181,3924.69)
@@ -273,7 +273,5 @@ nao.cessna <- subset(teste, teste$transecto=="ta6"|teste$transecto=="ta8"|teste$
   amean.group.size <- mean(nao.cessna$grupo_max[nao.cessna$grupo_max!=0]) # mean group size excluding zeros
   apop.estimate <- aY*amean.group.size # total population in sector
   pop.density.nao.cessna <- apop.estimate/aarea.sampled.total
-  
-  #-----------------COBERTURA POR TRANSECTO---------------------------
   
   
