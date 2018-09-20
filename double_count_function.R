@@ -1,5 +1,5 @@
 
-# Função para estimar população de búfalos em cada setor
+# Função para estimar população de búfalos em cada setor da REBIO Piratuba
 
 double.count <- function(x, k, l, z) # argumentos: x=setor da reserva, k e l = tamanho minimo e maximo de grupo, z = área do setor
 {
