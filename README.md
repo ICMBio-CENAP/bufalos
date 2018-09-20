@@ -8,4 +8,4 @@ Script e dados para estimativa populacional de búfalos na REBIO Piratuba e ESEC
 
 **double_count_analysis_code.R** é o script para rodar as análises (estimativas populacionais, gráficos etc.).
 
-**double_count_function.R** é o script com as funções double.count e ci.count para estimativa populacional script ( e cálculo de intervalo de confiança (bootstrap). O script anterior chama essas funções para rodar as análises.
+**double_count_function.R** é o script com as funções double.count e ci.count para estimativa populacional e cálculo de intervalo de confiança (bootstrap) respectivamente. O script anterior chama essas funções para rodar as análises.
