@@ -1,5 +1,8 @@
-# bufalos
+## bufalos
+
 Script e dados para estimativa populacional de búfalos na REBIO Piratuba e ESEC Maracá-Jipioca, 2017 
+
+# arquivos
 
 bufalos.csv é o arquivo com dados de contagens aéreas (método de contagem dupla) realizadas na REBIO Piratuba e ESEC Maracá-Jipioca em dezembro de 2017.
 
