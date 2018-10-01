@@ -1,0 +1,275 @@
+# Analysis code
+# Feral buffaloes at Piratuba Biological Reserve and Maracá-Jipioca Ecological Station 
+
+# read dataset
+bufalo <- read.table(paste0(getwd(), "/data/bufalo.csv"), header=T, sep=",")
+
+# comando para criar coluna densidade (observada para o mapa)
+# bufalo$dens.observ <- bufalo$grupo_max/(as.numeric(bufalo$Altitude)*6/2 * as.numeric(bufalo$Compriment) *10^-6)
+
+# remove "water only" subunits
+#bufalo <- subset(bufalo, ambiente!="a")
+
+# cessna transects
+cessna <- bufalo[which(bufalo$transecto=="ta6cessna"|bufalo$transecto=="ta8cessna"|bufalo$transecto=="tb2cessna"|bufalo$transecto=="tb4cessna"|bufalo$transecto=="tb6cessna"|bufalo$transecto=="tc2cessna"|bufalo$transecto=="tc4cessna"|bufalo$transecto=="tc6cessna"|bufalo$transecto=="tn15cessna"), ]
+cessna$transecto <- factor(cessna$transecto)
+
+# helicopter transects
+bufalo <- subset(bufalo, bufalo$transecto!="ta6cessna" & bufalo$transecto!="ta8cessna" & bufalo$transecto!="tb2cessna" & bufalo$transecto!="tb4cessna" & bufalo$transecto!="tb6cessna" & bufalo$transecto!="tc2cessna" & bufalo$transecto!="tc4cessna" & bufalo$transecto!="tc6cessna" & bufalo$transecto!="tn15cessna")
+bufalo$transecto <- factor(bufalo$transecto)
+
+# piratuba
+piratuba <- subset(bufalo, bufalo$setor == "Piratuba_ Araguari" |bufalo$setor == "Piratuba_Noroeste")
+
+# maraca-jipioca transects (excluding maraca norte)
+maraca <- subset(bufalo, bufalo$setor == "Maraca_sul")
+
+# Araguari transects (usando transectos como critério)
+araguari <- subset(bufalo, bufalo$transecto=="tn1"|bufalo$transecto=="tn2"|bufalo$transecto=="tn3"|bufalo$transecto=="tn4"|bufalo$transecto=="tn5"|bufalo$transecto=="tn6"|bufalo$transecto=="tn7"|bufalo$transecto=="tn8"|bufalo$transecto=="tn9"|bufalo$transecto=="tn10"|bufalo$transecto=="tn11"|bufalo$transecto=="tn12"|bufalo$transecto=="tn13"|bufalo$transecto=="tn14"|bufalo$transecto=="tn15"
+                   |bufalo$transecto=="tc1"|bufalo$transecto=="tc2"|bufalo$transecto=="tc3"|bufalo$transecto=="tc4"|bufalo$transecto=="tc5"|bufalo$transecto=="tc6"
+                   |bufalo$transecto=="tz7"|bufalo$transecto=="tz8"|bufalo$transecto=="tz9"|bufalo$transecto=="tz10"|bufalo$transecto=="tz11"|bufalo$transecto=="tz12"
+                   |bufalo$transecto=="a1"|bufalo$transecto=="a2"|bufalo$transecto=="a3"|bufalo$transecto=="a4"|bufalo$transecto=="a5"|bufalo$transecto=="a6"|bufalo$transecto=="a7"|bufalo$transecto=="a8"
+                   |bufalo$transecto=="b1"|bufalo$transecto=="b2"|bufalo$transecto=="b3"|bufalo$transecto=="b4"|bufalo$transecto=="b5"|bufalo$transecto=="b6")
+
+# transects ta1-ta8 and tb1-tb6 may be considered w transects 
+
+# araguari setor (usando setor como critério)
+araguari.setor <- subset(bufalo, setor=="Piratuba_ Araguari")
+
+# W and NW transects
+w.nw <- subset(bufalo, bufalo$transecto=="tz1"|bufalo$transecto=="tz2"|bufalo$transecto=="tz3"|bufalo$transecto=="tz4"|bufalo$transecto=="tz5"|bufalo$transecto=="tz6"
+               |bufalo$transecto=="tf1"|bufalo$transecto=="tf2"|bufalo$transecto=="tf3"|bufalo$transecto=="tf4"|bufalo$transecto=="tf5"|bufalo$transecto=="tf6"|bufalo$transecto=="tf7"|bufalo$transecto=="tf8")
+w.nw.setor <- subset(bufalo, setor=="Piratuba_Noroeste")
+central.setor <- subset(bufalo, setor=="Piratuba_central")
+
+# running double.count and boot.ci
+
+# araguari com buffer 15 km, area.sector <- 1389.26
+# w.nw, area.sector <- 931.878
+# central, area.sector <- 1601.18
+# maraca sul,  area.sector <- 460.89
+# piratuba exceto central, area.sector <- 3924.69-1601.18
+
+# Source this file: fuctions double.count and boot.ci to estimate pop size and confidence intervals
+source(paste0(getwd(),"/src/double_count_function.R"))
+
+double.count (piratuba, 1,181, 2616.46) # extrapola densidade para 2/3 da reserva
+ci.count(piratuba,1,181,3924.69)
+
+double.count (w.nw.setor, 1,181, 931.878)
+ci.count(w.nw.setor,1,181,931.878)
+
+double.count (araguari.setor, 1,181,1389.26)
+ci.count(araguari.setor,1,181, 1389.26)
+
+double.count (central.setor, 1,181,1601.18)
+ci.count(central.setor,1,181, 1601.18)
+
+double.count(cessna, 1,181, 1389.26) # não funciona, aparentemente não contamos grupos nas fotos de cessna, checar
+
+double.count (maraca,1,181,460.89)
+ci.count(maraca,1,181,460.89)
+
+#------------estimando separadamente Araguari, NW e central e depois somando, 10 mil boostrap----------------------
+
+combinado <- rep(NA, 10000)    # criando objeto para receber valores de simulação
+araguari.setor$iboot <- 1:nrow(araguari.setor)
+w.nw.setor$iboot <- 1:nrow(w.nw.setor)
+central.setor$iboot <- 1:nrow(central.setor)
+for(i in 1:10000)    # criando contador
+{
+  iboot1 <- sample(1:nrow(araguari.setor), replace=TRUE)
+  bootdata1 <- araguari.setor[araguari.setor$iboot %in% iboot1,]
+  iboot2 <- sample(1:nrow(w.nw.setor), replace=TRUE)
+  bootdata2 <- w.nw.setor[w.nw.setor$iboot %in% iboot2,]
+  iboot3 <- sample(1:nrow(central.setor), replace=TRUE)
+  bootdata3 <- w.nw.setor[central.setor$iboot %in% iboot3,]
+  c <- double.count (bootdata1, 1,181,1389.26)[1]
+  d <- double.count(bootdata2,1,181,931.878)[1]
+  e <- double.count(bootdata3,1,181,1601.18)[1]
+  combinado[i] <- as.numeric(c)+as.numeric(d)+as.numeric(e)
+  assign("combinado", combinado, .GlobalEnv)
+  }
+mean(combinado)
+round(quantile(combinado, probs=c(0.025, 0.975), na.rm=T), 4)    # criando objeto com quantis referentes ao 95% CI
+sd(combinado)
+
+#------------Checando alguns resultados de Tomas et al. 2011---------------------
+
+# densidade media REBIO = 19,6 ind/km2 (regioes noroeste, oeste e sul)
+# população total REBIO = 33354 bufalos
+# 33354/19.6 = 1701.735 km2 = 170173 ha
+# REBIO tem 392469 ha, logo população calculada para 43% da UC (meu calculo é para 59% da UC)
+
+# densidade noroeste/oeste = 9 ind/km2
+# população noroeste/oeste = 11759 ind
+# 11759/9 = 1306.5 km2 = 130650 ha (meu calculo é para 93187 ha)
+
+# densidade araguari = 51 ind/km2
+# população araguari = 20703 ind
+# 20703/51 = 405.9 km2 = 40000 ha (meu calculo é para 138926 ha)
+
+ 
+#--------------------GRÁFICO DE TENDENCIAS TEMPORAIS-------------------------------------------------
+
+popPIRATUBA <- c(33354, 31887, 17769)
+popMARACA <- c(641,528,686.51)
+sdevPIRATUBA <- c(4680, 3442, 2281.961)
+sdevMARACA <- c(235,187,325.3)
+ano <- c(2007, 2013, 2017)
+
+# REBIO Piratuba
+plot(ano, popPIRATUBA, ylim=range(c(0, 40000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, xlab="Ano", ylab="População de búfalos (média +/- SD)",
+     main="População de búfalos na REBIO Piratuba, 2007-2017")
+axis(1, seq(2007,2017,1),las=2, cex.axis=0.8, font=2)
+arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16) # linha entre pontos
+
+# ESEC Maraca
+plot(ano, popMARACA, ylim=range(c(0, 1000)), xlim=range(c(2007,2017)) , xaxt="n", pch=19, xlab="Ano", ylab="População de búfalos (média +/- SD)",
+     main="População de búfalos na ESEC Maracá-Jipioca, 2008-2017")
+axis(1, seq(2007,2017,1),las=2, cex.axis=0.8, font=2)
+arrows(ano, popMARACA-sdevMARACA, ano, popMARACA+sdevMARACA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popMARACA[order(ano)], xlim=range(ano), ylim=range(popMARACA), pch=16) # linha entre pontos
+
+#------------------------------------------------------------------
+
+#-------------Estimativa por transecto, SD inter-transectos-----------------
+
+piratuba <- bufalo[ which(bufalo$setor =="Piratuba_ Araguari"| bufalo$setor=="Piratuba_central"| bufalo$setor=="Piratuba_Noroeste"), ]
+x.piratuba <- cbind.data.frame(sort(unique(piratuba$transecto)), rep(NA, length(unique(piratuba$transecto))), rep(NA, length(unique(piratuba$transecto))), rep(NA, length(unique(piratuba$transecto))) )
+colnames(x.piratuba) <- c("transecto", "D", "P.detec", "cover")
+
+piratuba$cover <- piratuba$ambiente
+unique(piratuba$cover)
+levels(piratuba$cover)[levels(piratuba$cover)=="a"] <- NA
+levels(piratuba$cover)[levels(piratuba$cover)=="ac"] <- NA
+levels(piratuba$cover)[levels(piratuba$cover)=="ca"] <- NA
+levels(piratuba$cover)[levels(piratuba$cover)=="am"] <- NA
+levels(piratuba$cover)[levels(piratuba$cover)=="c"] <- 1
+levels(piratuba$cover)[levels(piratuba$cover)=="cm"] <- 2
+levels(piratuba$cover)[levels(piratuba$cover)=="m"] <- 3
+piratuba$cover <- as.numeric(levels(piratuba$cover)[piratuba$cover])
+
+
+maraca <- bufalo[ which(bufalo$setor =="Maraca_sul"), ]
+x.maraca <- cbind.data.frame(sort(unique(maraca$transecto)), rep(NA, length(unique(maraca$transecto))) )
+colnames(x.maraca) <- c("transecto", "D")
+
+#---------------- Preenchendo para Piratuba------------------------------
+
+for(i in 1:nrow(x.piratuba))    # criando contador
+  {
+  sub.x.piratuba <- subset(piratuba, piratuba$transecto == x.piratuba[i,1])
+  W <- as.numeric(sub.x.piratuba$Altitude)*6/2 # largura de amostragem em vôo, W = H*w/h
+  area.sampled.m2 <- W*as.numeric(sub.x.piratuba$Compriment) # área amostrada (m²)
+  area.sampled.total <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
+  B <- sum(as.numeric(sub.x.piratuba$B)) # n groups seen by both observers
+  S1 <- sum(as.numeric(sub.x.piratuba$S1)) # n groups seen by observer 1
+  S2 <- sum(as.numeric(sub.x.piratuba$S2)) # n groups seen by observer 2
+  P1 <- sum(sub.x.piratuba$B)/(sum(sub.x.piratuba$B)+sum(sub.x.piratuba$S2)) # detection probability
+  P2 <- sum(sub.x.piratuba$B)/(sum(sub.x.piratuba$B)+sum(sub.x.piratuba$S1))
+  M <- S1*S2/B
+  y.1 <- (B+S1+1)
+  y.2 <- (B+S2+1)
+  y.3 <- (B+1)
+  Y <- (y.1*y.2/y.3)-1
+  mean.group.size <- mean(sub.x.piratuba$grupo_max[sub.x.piratuba$grupo_max!=0]) # mean group size ex.piratubacluding zeros
+  pop.estimate <- Y*mean.group.size # total population in sector
+  pop.density <- pop.estimate/area.sampled.total
+  x.piratuba[i,2] <- pop.density
+  x.piratuba[i,3] <- (P1+P2)/2
+  x.piratuba[i,4] <- mean(sub.x.piratuba$cover)
+  }
+
+View(x.piratuba)
+
+with(x.piratuba, table(P.detec, cover))
+
+# plotting it
+plot(jitter(x.piratuba$cover,2), x.piratuba$P.detec, pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
+
+plot(jitter(x.piratuba$cover,2), x.piratuba$P.detec, ylim=c(0.5,1), pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
+
+# acrescentando fórmula da regressão ao gráfico
+cf <- round(coef(f), 2) # arredondando coeficientes para melhor output
+eq <- paste0("P = ", cf[1]," + ", abs(cf[2]), "* tamanho do grupo")
+## printing of the equation
+mtext(eq, 3, line=-2)
+
+
+#---------------IDEM para Maraca-------------------
+
+for(i in 1:nrow(x.maraca))    # criando contador
+{
+  sub.x.maraca <- subset(maraca, maraca$transecto == x.maraca[i,1])
+  W <- as.numeric(sub.x.maraca$Altitude)*6/2 # largura de amostragem em vôo, W = H*w/h
+  area.sampled.m2 <- W*as.numeric(sub.x.maraca$Compriment) # área amostrada (m²)
+  area.sampled.total <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
+  B <- sum(as.numeric(sub.x.maraca$B)) # n groups seen by both observers
+  S1 <- sum(as.numeric(sub.x.maraca$S1)) # n groups seen by observer 1
+  S2 <- sum(as.numeric(sub.x.maraca$S2)) # n groups seen by observer 2
+  P1 <- sum(sub.x.maraca$B)/(sum(sub.x.maraca$B)+sum(sub.x.maraca$S2)) # detection probability
+  P2 <- sum(sub.x.maraca$B)/(sum(sub.x.maraca$B)+sum(sub.x.maraca$S1))
+  M <- S1*S2/B
+  y.1 <- (B+S1+1)
+  y.2 <- (B+S2+1)
+  y.3 <- (B+1)
+  Y <- (y.1*y.2/y.3)-1
+  mean.group.size <- mean(sub.x.maraca$grupo_max[sub.x.maraca$grupo_max!=0]) # mean group size ex.maracacluding zeros
+  pop.estimate <- Y*mean.group.size # total population in sector
+  pop.density <- pop.estimate/area.sampled.total
+  x.maraca[i,2] <- pop.density
+}
+
+x.piratuba[is.na(x.piratuba)] <- 0 # transectos com zero bufalos estavam como NA, corrigir isso
+piratuba.mean.density <- mean(x.piratuba$D)
+piratuba.pop.TOTAL <- piratuba.mean.density*3924.69 # população mais alta porque zeros foram descartados acima
+# FALTA CALCULAR O SD
+
+x.maraca[is.na(x.maraca)] <- 0 # transectos com zero bufalos estavam como NA, corrigir isso
+maraca.mean.density <- mean(na.omit(x.maraca$D))
+maraca.pop.TOTAL <- maraca.mean.density*460.89
+
+
+#-------------------- COMPARAR TRANSECTOS CESSNA VS HELICOPTERO-----------------------------
+
+teste <- read.table("bufalo_20feb2018.csv", header=T, sep=",")
+cessna <- subset(teste, teste$transecto=="ta6cessna"|teste$transecto=="ta8cessna"|teste$transecto=="tb2cessna"|teste$transecto=="tb4cessna"|teste$transecto=="tb6cessna"|teste$transecto=="tc28cessna"|teste$transecto=="tc4cessna"|teste$transecto=="tc6cessna"|teste$transecto=="tn15cessna")
+nao.cessna <- subset(teste, teste$transecto=="ta6"|teste$transecto=="ta8"|teste$transecto=="tb2"|teste$transecto=="tb4"|teste$transecto=="tb6"|teste$transecto=="tc28"|teste$transecto=="tc4"|teste$transecto=="tc6"|teste$transecto=="tn15")
+
+# calculando pop density para cessna
+  area.sampled.m2 <- 300*as.numeric(cessna$Compriment) # área amostrada (m²)
+  area.sampled.total <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
+  B <- sum(as.numeric(cessna$B)) # n groups seen by both observers
+  S1 <- sum(as.numeric(cessna$S1)) # n groups seen by observer 1
+  S2 <- sum(as.numeric(cessna$S2)) # n groups seen by observer 2
+  P1 <- sum(cessna$B)/(sum(cessna$B)+sum(cessna$S2)) # detection probability
+  P2 <- sum(cessna$B)/(sum(cessna$B)+sum(cessna$S1))
+  M <- S1*S2/B
+  y.1 <- (B+S1+1)
+  y.2 <- (B+S2+1)
+  y.3 <- (B+1)
+  Y <- (y.1*y.2/y.3)-1
+  mean.group.size <- mean(cessna$grupo_max[cessna$grupo_max!=0]) # mean group size excluding zeros
+  pop.estimate <- Y*mean.group.size # total population in sector
+  pop.density.cessna <- pop.estimate/area.sampled.total
+  
+  # calculando pop density para nao.cessna (mesmos transectos)
+  aarea.sampled.m2 <- 300*as.numeric(nao.cessna$Compriment) # área amostrada (m²)
+  aarea.sampled.total <- sum(na.omit(aarea.sampled.m2))*10^-6 # area amostrada em km2
+  aB <- sum(as.numeric(nao.cessna$B)) # n groups seen by both observers
+  aS1 <- sum(as.numeric(nao.cessna$S1)) # n groups seen by observer 1
+  aS2 <- sum(as.numeric(nao.cessna$S2)) # n groups seen by observer 2
+  aP1 <- sum(nao.cessna$B)/(sum(nao.cessna$B)+sum(nao.cessna$S2)) # detection probability
+  aP2 <- sum(nao.cessna$B)/(sum(nao.cessna$B)+sum(nao.cessna$S1))
+  aM <- aS1*aS2/aB
+  ay.1 <- (aB+aS1+1)
+  ay.2 <- (aB+aS2+1)
+  ay.3 <- (aB+1)
+  aY <- (ay.1*ay.2/ay.3)-1
+  amean.group.size <- mean(nao.cessna$grupo_max[nao.cessna$grupo_max!=0]) # mean group size excluding zeros
+  apop.estimate <- aY*amean.group.size # total population in sector
+  pop.density.nao.cessna <- apop.estimate/aarea.sampled.total
+  
+  
