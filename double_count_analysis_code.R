@@ -1,10 +1,8 @@
 # Analysis code
 # Feral buffaloes at Piratuba Biological Reserve and Maracá-Jipioca Ecological Station 
 
-setwd("/media/elildojr/Dados/r/bufalo")
-
 # read dataset
-bufalo <- read.table("bufalo.csv", header=T, sep=",")
+bufalo <- read.table(paste0(getwd(), "/bufalo.csv"), header=T, sep=",")
 
 # comando para criar coluna densidade (observada para o mapa)
 # bufalo$dens.observ <- bufalo$grupo_max/(as.numeric(bufalo$Altitude)*6/2 * as.numeric(bufalo$Compriment) *10^-6)
