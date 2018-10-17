@@ -12,9 +12,11 @@ Script e dados para estimativa populacional de búfalos na REBIO Piratuba e ESEC
 
 
 
+
+
 **Figura 1.** Densidades observadas de búfalos na REBIO do Lago Piratuba, Amapá:
 
-![image|100x100,20%](https://user-images.githubusercontent.com/39089964/47087162-b5125080-d1f1-11e8-9774-53f6c80a65e8.png)
+![image](https://user-images.githubusercontent.com/39089964/47087162-b5125080-d1f1-11e8-9774-53f6c80a65e8.png| width=100)
 
 
 **Figura 2.** Variação temporal na população de búfalos na REBIO do Lago Piratuba (contagens realizadas em 2007, 2013 e 2017):
