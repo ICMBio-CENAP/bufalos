@@ -11,4 +11,16 @@ Script e dados para estimativa populacional de búfalos na REBIO Piratuba e ESEC
 **double_count_function.R** é o script com as funções double.count e ci.count para estimativa populacional e cálculo de intervalo de confiança (bootstrap) respectivamente. O script anterior chama essas funções para rodar as análises.
 
 
+Densidades observadas de búfalos na REBIO do Lago Piratuba, Amapá:
+
 ![image](https://user-images.githubusercontent.com/39089964/47087162-b5125080-d1f1-11e8-9774-53f6c80a65e8.png)
+
+
+Variação temporal na população de búfalos na REBIO do Lago Piratuba (contagens realizadas em 2007, 2013 e 2017):
+
+![image](https://user-images.githubusercontent.com/39089964/47087258-e2f79500-d1f1-11e8-8048-17fa39161f2d.png)
+
+
+Variação temporal na estimativa da população de búfalos na ESEC Maraca-Jipioca (contagens realizadas em 2007, 2013 e 2017):
+
+![image](https://user-images.githubusercontent.com/39089964/47087335-163a2400-d1f2-11e8-845f-2d0ba6b6421f.png)
