@@ -15,8 +15,6 @@ source(here("src", "double-count-function.R")) # using package here to build a p
 piratuba <- read.csv(here("data", "piratuba.csv"))
 maraca <- read.csv(here("data", "maraca.csv"))
 
-# comando para criar coluna densidade (observada para o mapa)
-# buffalo$dens.observ <- buffalo$grupo_max/(as.numeric(buffalo$Altitude)*6/2 * as.numeric(buffalo$Compriment) *10^-6)
 
 ##-----4 - Run double count and boot.ci functions -----
 

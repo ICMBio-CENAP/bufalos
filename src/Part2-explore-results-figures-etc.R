@@ -1,21 +1,41 @@
 
-#------------Checando alguns resultados de Tomas et al. 2011---------------------
+# Analysis code
+# Feral buffaloes at Piratuba Biological Reserve and Maracá-Jipioca Ecological Station 
+# Elildo Carvalho Jr @ ICMBio/CENAP, 2020-04-02
 
-# densidade media REBIO = 19,6 ind/km2 (regioes noroeste, oeste e sul)
-# população total REBIO = 33354 buffalos
+### Part 2. Explore results
+
+##----- 1 - Load libraries-----
+library(here)
+library(ggplot2)
+
+##----- 2 - Source files-----
+#source(here("src", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
+
+
+##-----3 - Read data -----
+#piratuba <- read.csv(here("data", "piratuba.csv"))
+#maraca <- read.csv(here("data", "maraca.csv"))
+
+
+#------------------------------------------------
+# Check results from Tomas et al. 2011 for comparative purposes:
+# mean density Piratuba = 19,6 ind/km2 (nw, w and south)
+# total population Piratuba = 33354 ind
 # 33354/19.6 = 1701.735 km2 = 170173 ha
-# REBIO tem 392469 ha, logo população calculada para 43% da UC (meu calculo é para 59% da UC)
+# Piratuba has 392469 ha, so the population must have been estimated for 43% of the PA (my estimate is for 59% of the PA)
 
-# densidade noroeste/oeste = 9 ind/km2
-# população noroeste/oeste = 11759 ind
-# 11759/9 = 1306.5 km2 = 130650 ha (meu calculo é para 93187 ha)
+# noroeste/oeste density = 9 ind/km2
+# noroeste/oeste population = 11759 ind
+# 11759/9 = 1306.5 km2 = 130650 ha (my estimate is for 93187 ha)
 
-# densidade araguari = 51 ind/km2
-# população araguari = 20703 ind
-# 20703/51 = 405.9 km2 = 40000 ha (meu calculo é para 138926 ha)
+# araguari density = 51 ind/km2
+# araguari population = 20703 ind
+# 20703/51 = 405.9 km2 = 40000 ha (my estimate is for 138926 ha)
+#------------------------------------------------
 
 
-#--------------------GRÁFICO DE TENDENCIAS TEMPORAIS-------------------------------------------------
+##-----3 - Plot temporal trends -----
 
 popPIRATUBA <- c(33354, 31887, 17769)
 popMARACA <- c(641,528,686.51)

@@ -14,6 +14,9 @@ library(here)
 ##-----3 - Read data -----
 buffalo <- read.csv(here("data", "raw-data.csv"), header=T, sep=",")
 
+# comando para criar coluna densidade (observada para o mapa)
+# buffalo$dens.observ <- buffalo$grupo_max/(as.numeric(buffalo$Altitude)*6/2 * as.numeric(buffalo$Compriment) *10^-6)
+
 ##-----3 - Generate spatial distributions -----
 
 # Start with provide the lon/lat range of the data
