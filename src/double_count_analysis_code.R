@@ -19,10 +19,20 @@ bufalo <- subset(bufalo, bufalo$transecto!="ta6cessna" & bufalo$transecto!="ta8c
 bufalo$transecto <- factor(bufalo$transecto)
 
 # piratuba
-piratuba <- subset(bufalo, bufalo$setor == "Piratuba_ Araguari" |bufalo$setor == "Piratuba_Noroeste")
+piratuba <- subset(bufalo, bufalo$setor == "Piratuba_ Araguari" |bufalo$setor == "Piratuba_Noroeste" |bufalo$setor == "Piratuba_central")
 
 # maraca-jipioca transects (excluding maraca norte)
 maraca <- subset(bufalo, bufalo$setor == "Maraca_sul")
+
+# araguari setor (usando setor como critério)
+araguari.setor <- subset(bufalo, setor=="Piratuba_ Araguari")
+
+# W and NW setor (usando setor como critério)
+w.nw.setor <- subset(bufalo, setor=="Piratuba_Noroeste")
+
+# central setor (usando setor como critério)
+central.setor <- subset(bufalo, setor=="Piratuba_central")
+
 
 # Araguari transects (usando transectos como critério)
 araguari <- subset(bufalo, bufalo$transecto=="tn1"|bufalo$transecto=="tn2"|bufalo$transecto=="tn3"|bufalo$transecto=="tn4"|bufalo$transecto=="tn5"|bufalo$transecto=="tn6"|bufalo$transecto=="tn7"|bufalo$transecto=="tn8"|bufalo$transecto=="tn9"|bufalo$transecto=="tn10"|bufalo$transecto=="tn11"|bufalo$transecto=="tn12"|bufalo$transecto=="tn13"|bufalo$transecto=="tn14"|bufalo$transecto=="tn15"
@@ -33,14 +43,39 @@ araguari <- subset(bufalo, bufalo$transecto=="tn1"|bufalo$transecto=="tn2"|bufal
 
 # transects ta1-ta8 and tb1-tb6 may be considered w transects 
 
-# araguari setor (usando setor como critério)
-araguari.setor <- subset(bufalo, setor=="Piratuba_ Araguari")
-
-# W and NW transects
+# W and NW transects (usando transectos como critério)
 w.nw <- subset(bufalo, bufalo$transecto=="tz1"|bufalo$transecto=="tz2"|bufalo$transecto=="tz3"|bufalo$transecto=="tz4"|bufalo$transecto=="tz5"|bufalo$transecto=="tz6"
                |bufalo$transecto=="tf1"|bufalo$transecto=="tf2"|bufalo$transecto=="tf3"|bufalo$transecto=="tf4"|bufalo$transecto=="tf5"|bufalo$transecto=="tf6"|bufalo$transecto=="tf7"|bufalo$transecto=="tf8")
-w.nw.setor <- subset(bufalo, setor=="Piratuba_Noroeste")
-central.setor <- subset(bufalo, setor=="Piratuba_central")
+
+
+# Generate spatial distributions ----------------------------------
+library(ggmap)
+
+# Start with provide the lon/lat range of the data
+lon <- range(bufalo$Longitude, na.rm=T)
+lat <- range(bufalo$Latitude, na.rm=T)
+
+bufalo$transec.time <- paste(bufalo$transecto, bufalo$tempo, sep=".")
+
+# Extract the unique lat/lons and put them on a data frame
+locations.bufalo <- unique(cbind(as.character(bufalo$transec.time), bufalo$Latitude,bufalo$Longitude))
+
+locations.bufalo <- data.frame(transec.time = locations.bufalo[,1], Latitude = as.numeric(locations.bufalo[,2]), Longitude = as.numeric(locations.bufalo[,3]))
+
+locations.bufalo <- dplyr::arrange(locations.bufalo, transec.time)
+
+# If you have internet: Download the map from google
+map <- get_map(location = c(c(lon[1],lat[1]),c(lon[2],lat[2])), zoom = 10, source = "google", maptype = "satellite")
+
+# Plot the locations of flight subunits
+ggmap(map, extent = "normal", maprange = T) + geom_point(data=locations.bufalo, aes(x = Longitude, y = Latitude), colour="black", size = 0.1)
+
+# Plot observed densities
+ggmap(map, extent = "normal", maprange = T) + geom_point(data = locations.bufalo, aes(x = Longitude, y = Latitude, color = n), size = 0.5)
+
+# Plot as a surface
+ggmap(map, extent = "device", legend = "topleft")  + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), data = bufalo, geom = "polygon", size = 2, bins = 10, alpha = 0.5)
+
 
 # running double.count and boot.ci
 
@@ -48,13 +83,13 @@ central.setor <- subset(bufalo, setor=="Piratuba_central")
 # w.nw, area.sector <- 931.878
 # central, area.sector <- 1601.18
 # maraca sul,  area.sector <- 460.89
-# piratuba exceto central, area.sector <- 3924.69-1601.18
+# piratuba exceto central, area.sector <- 3924.69-1601.18 = 2323.51
 
 # Source this file: fuctions double.count and boot.ci to estimate pop size and confidence intervals
 source(paste0(getwd(),"/src/double_count_function.R"))
 
-double.count (piratuba, 1,181, 2616.46) # extrapola densidade para 2/3 da reserva
-ci.count(piratuba,1,181,3924.69)
+double.count (piratuba, 1,181, 1389.26+931.878+1601.18) # extrapola igualmente para toda a reserva
+ci.count(piratuba,1,181,2323.51)
 
 double.count (w.nw.setor, 1,181, 931.878)
 ci.count(w.nw.setor,1,181,931.878)
@@ -133,6 +168,287 @@ arrows(ano, popMARACA-sdevMARACA, ano, popMARACA+sdevMARACA, length=0.05, angle=
 lines(ano[order(ano)], popMARACA[order(ano)], xlim=range(ano), ylim=range(popMARACA), pch=16) # linha entre pontos
 
 #------------------------------------------------------------------
+
+# Plot trends from IBGE data: https://cidades.ibge.gov.br/brasil/ap/tartarugalzinho/pesquisa/18/16459?indicador=16535&ano=2017&localidade1=160021&localidade2=160010
+# efetivo rebanho bubalino IBGE
+year <- c(2007:2017)
+tartarugalzinho <- c(25981, 26798, 24705, 26987, 28174, 30177, 31625, 33396, 42328, 45711, 47195)
+pracuuba <- c(15349, 14931, 15707, 16348, 18197, 19710, 20813, 20020, 12129, 11108, 8790)
+amapa <- c(32579, 30714, 29117, 30453, 32456, 34191, 35729, 37465, 34177, 32155, 33793)
+cutias <- c(48753, 49815, 51195, 53641, 62548, 65970, 69796, 72936, 75282, 76980, 79113)
+all <- tartarugalzinho+pracuuba+amapa+cutias
+amapa.pracuuba.tartarugalzinho <- amapa+pracuuba+tartarugalzinho
+amapa.pracuuba <- amapa+pracuuba
+cutias.tartarugalzinho <- cutias+tartarugalzinho
+
+# pracuuba
+plot(year, pracuuba, ylim=range(c(0, 25000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Pracuúba (IBGE)", side=3, line=1, cex=0.8)
+
+# amapa
+plot(year, amapa, ylim=range(c(0, 40000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Amapá (IBGE)", side=3, line=1, cex=0.8)
+
+# tartarugalzinho
+plot(year, tartarugalzinho, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Tartarugalzinho (IBGE)", side=3, line=1, cex=0.8)
+
+# amapa AND pracuuba and tartarugalzinho
+plot(year, amapa, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=2, cex=0.8,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16, lty=3) # linha entre pontos
+points(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=20, cex=0.8)
+lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16, lty=1) # linha entre pontos
+points(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=0, cex=0.8)
+lines(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=16, lty=5) # linha entre pontos
+legend(2007, 13000, legend=c("Amapa", "Pracuuba", "Tartarugalzinho"), pch=c(2,20,0), lty=c(3,1,5),  cex=0.7, box.lty=0)
+
+#-----------
+# Fig 3 multiplot
+
+par(mfrow = c(3, 1), tcl=-0.5)
+par(mai = c(0.2,0.2,0.2,0.2), mar = c(0.5,0.5,0.5,0.5), oma = c(2, 6, 2, 2)) # edit oma to get space for species names
+#par(mai = c(0.1,1,0.1,0.1))
+
+# ESEC Maraca
+plot(ano, popMARACA, ylim=range(c(0, 1200)), xlim=range(c(2007,2017)) , xaxt="n", yaxt="n", pch=19, xlab="Ano", ylab="População de búfalos (média +/- SD)",
+     main="", cex.axis=1, las=1)
+axis(2, seq(0,1200,400), cex.axis=1.5, font=1, las=1)
+arrows(ano, popMARACA-sdevMARACA, ano, popMARACA+sdevMARACA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popMARACA[order(ano)], xlim=range(ano), ylim=range(popMARACA), pch=16) # linha entre pontos
+mtext("(a)", side=3, adj=0.05, line=-2.5, cex=1.5)
+
+# REBIO Piratuba
+plot(ano, popPIRATUBA, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=19, xlab="Ano", ylab="População de búfalos (média +/- SD)",
+     main="", cex.axis=1, las=1)
+axis(2, seq(0,50000,20000), cex.axis=1.5, font=1, las=1)
+arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16) # linha entre pontos
+mtext("(b)", side=3, adj=0.05, line=-2.5, cex=1.5)
+
+# amapa AND pracuuba and tartarugalzinho
+plot(year, amapa, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=2, cex=0.8,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=1.5, font=1, las=1)
+axis(2, seq(0,50000,15000), cex.axis=1.5, font=1, las=1)
+lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16, lty=3) # linha entre pontos
+points(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=20, cex=0.8)
+lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16, lty=1) # linha entre pontos
+points(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=0, cex=0.8)
+lines(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=16, lty=5) # linha entre pontos
+#legend(2007, 15000, legend=c("Amapa", "Pracuuba", "Tartarugalzinho"), pch=c(2,20,0), lty=c(3,1,5),  cex=0.8, box.lty=0)
+mtext("(c)", side=3, adj=0.05, line=-2.5, cex=1.5)
+text(c(2016.7,2016.7,2016.7),c(49695,36293,11290),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
+#text(c(2016.8,2016.8,2016.8),c(43195,29793,4790),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
+#-----------
+
+#-----------
+# Fig 3 multiplot version 2
+
+par(mfrow = c(3, 1), tcl=-0.5)
+par(mai = c(0.2,0.2,0.2,0.2), mar = c(0.5,0.5,0.5,0.5), oma = c(2, 6, 2, 2)) # edit oma to get space for species names
+#par(mai = c(0.1,1,0.1,0.1))
+
+# ESEC Maraca
+plot(ano, popMARACA, ylim=range(c(0, 1200)), xlim=range(c(2007,2017)) , xaxt="n", yaxt="n", pch=19, xlab="", ylab="",
+     main="", cex.axis=2, las=1)
+axis(2, seq(0,1200,400), cex.axis=2, font=1, las=1)
+arrows(ano, popMARACA-sdevMARACA, ano, popMARACA+sdevMARACA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popMARACA[order(ano)], xlim=range(ano), ylim=range(popMARACA), pch=16) # linha entre pontos
+mtext("(a)", side=3, adj=0.05, line=-2.5, cex=1.5)
+
+# REBIO Piratuba
+plot(ano, popPIRATUBA, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=19, xlab="", ylab="",
+     main="", cex.axis=2, las=1)
+axis(2, seq(0,50000,20000), cex.axis=2, font=1, las=1)
+arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16) # linha entre pontos
+mtext("(b)", side=3, adj=0.05, line=-2.5, cex=1.5)
+
+# amapa AND pracuuba and tartarugalzinho
+plot(year, amapa, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=2, cex=0.8,  ylab="", xlab="", las=1)
+axis(1, seq(2007,2017,2), cex.axis=2, font=1, las=1)
+axis(2, seq(0,50000,15000), cex.axis=2, font=1, las=1)
+lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16, lty=3) # linha entre pontos
+points(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=20, cex=0.8)
+lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16, lty=1) # linha entre pontos
+points(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=0, cex=0.8)
+lines(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=16, lty=5) # linha entre pontos
+#legend(2007, 15000, legend=c("Amapa", "Pracuuba", "Tartarugalzinho"), pch=c(2,20,0), lty=c(3,1,5),  cex=0.8, box.lty=0)
+mtext("(c)", side=3, adj=0.05, line=-2.5, cex=1.5)
+text(c(2016.7,2016.7,2016.7),c(49695,36293,11290),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
+#text(c(2016.8,2016.8,2016.8),c(43195,29793,4790),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
+#-----------
+
+
+
+#----------
+
+# Piratuba AND amapa AND pracuuba
+plot(year, amapa, ylim=range(c(0, 40000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=2, cex=0.8,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16, lty=3) # linha entre pontos
+points(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=0, cex=0.8)
+lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16, lty=5) # linha entre pontos
+points(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=20, cex=1)
+lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16, lty=1) # linha entre pontos
+#arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+# Add a legend
+legend(2007, 12000, legend=c("LPBR", "Amapa", "Pracuuba"), pch=c(20,2,0), lty=c(1,3,5),  cex=0.9, box.lty=0)
+#mtext("LPBR", side=3, adj=0.05, line=-10, at=2016, cex=0.7)
+#mtext("Amapá+Pracuúba", side=3, adj=0.05, line=-4, at=2015.3, cex=0.7)
+#mtext("Buffalo heads at LPBR (dashed) and in Amapa+Pracuuba (continuous)", side=3, line=1, cex=0.8)
+
+
+# amapa and pracuuba
+plot(year, amapa.pracuuba, ylim=range(c(0, 60000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], amapa.pracuuba[order(year)], xlim=range(year), ylim=range(amapa.pracuuba), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Amapá e Pracuuba (IBGE)", side=3, line=1, cex=0.8)
+
+
+# cutias
+plot(year, cutias, ylim=range(c(0, 80000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], cutias[order(year)], xlim=range(year), ylim=range(cutias), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Cutias (IBGE)", side=3, line=1, cex=0.8)
+
+  # tartarugalzinho
+  plot(year, tartarugalzinho, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+  axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+  lines(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=16) # linha entre pontos
+  #mtext("(a)", side=3, adj=0.05, line=-1.3)
+  mtext("Efetivo de rebanho bubalino Tartarugalzinho (IBGE)", side=3, line=1, cex=0.8)
+
+# all
+plot(year, all, ylim=range(c(0, 200000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], all[order(year)], xlim=range(year), ylim=range(all), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino around LPBR (IBGE)", side=3, line=1, cex=0.8)
+
+# amapa.pracuuba.tartarugalzinho
+plot(year, amapa.pracuuba.tartarugalzinho, xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], amapa.pracuuba.tartarugalzinho[order(year)], xlim=range(year), ylim=range(amapa.pracuuba.tartarugalzinho), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Buffalo herd sizes at Amapa, Pracuuba and Tartarugalzinho (IBGE)", side=3, line=1, cex=0.8)
+
+# amapa.pracuuba
+plot(year, amapa.pracuuba, ylim=range(c(0, 60000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], amapa.pracuuba[order(year)], xlim=range(year), ylim=range(amapa.pracuuba), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Amapa and Pracuuba (IBGE)", side=3, line=1, cex=0.8)
+
+# cutias.tartarugalzinho
+plot(year, cutias.tartarugalzinho, ylim=range(c(0, 140000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+lines(year[order(year)], cutias.tartarugalzinho[order(year)], xlim=range(year), ylim=range(cutias.tartarugalzinho), pch=16) # linha entre pontos
+#mtext("(a)", side=3, adj=0.05, line=-1.3)
+mtext("Efetivo de rebanho bubalino Cutias and Tartarugalzinho (IBGE)", side=3, line=1, cex=0.8)
+
+  # check difference between 2013 and 2017 at Amapa+Pracuba
+  amapa.pracuuba[11]-amapa.pracuuba[7]
+  # check difference between 2013 and 2017 at Cutias+Tartarugalzinho
+  cutias.tartarugalzinho[11]-cutias.tartarugalzinho[7]
+  # check difference between 2013 and 2017 at LPBR
+  popPIRATUBA[3]-popPIRATUBA[2]
+
+  # Piratuba AND amapa.pracuuba
+  plot(year, amapa.pracuuba, ylim=range(c(0, 60000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+  axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+  lines(year[order(year)], amapa.pracuuba[order(year)], xlim=range(year), ylim=range(amapa.pracuuba), pch=16) # linha entre pontos
+  lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16, lty=2) # linha entre pontos
+  points(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=2, cex=0.5)
+  arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+  # Add a legend
+  mtext("Piratuba", side=3, adj=0.05, line=-10, at=2016, cex=0.7)
+  mtext("Amapá+Pracuúba", side=3, adj=0.05, line=-4, at=2015.3, cex=0.7)
+  #mtext("Buffalo heads at LPBR (dashed) and in Amapa+Pracuuba (continuous)", side=3, line=1, cex=0.8)
+
+
+    
+  # Piratuba AND Pracuuba
+  plot(year, pracuuba, ylim=range(c(0, 60000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1)
+  axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+  lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16) # linha entre pontos
+  lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16, lty=2) # linha entre pontos
+  points(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=2, cex=0.5)
+  arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+  # Add a legend
+  #mtext("(a)", side=3, adj=0.05, line=-1.3)
+  mtext("Buffalo heads at Amapa and Pracuuba (IBGE) and LPBR", side=3, line=1, cex=0.8)
+  
+
+  # Piratuba AND Amapá AND Pracuuba and Tartarugalzinho
+  plot(year, amapa, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", pch=19, cex=0.5,  ylab="", xlab="", cex.axis=0.8, las=1, alpha=0.5)
+  axis(1, seq(2007,2017,2), cex.axis=0.8, font=1, las=1)
+  lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16, alpha=0.2) # linha entre pontos
+  lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16) # linha entre pontos
+  lines(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=16) # linha entre pontos
+  lines(year[order(year)], popPIRATUBA[order(year)], xlim=range(year), ylim=range(popPIRATUBA), pch=16, lty=2) # linha entre pontos
+  points(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=2, cex=0.5, alpha=0.2)
+  points(year[order(year)], tartarugalzinho[order(year)], xlim=range(year), ylim=range(tartarugalzinho), pch=2, cex=0.5, alpha=0.2)
+  points(year[order(year)], popPIRATUBA[order(year)], xlim=range(year), ylim=range(popPIRATUBA), pch=2, cex=0.5)
+  arrows(year, popPIRATUBA-sdevPIRATUBA, year, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+  # Add a legend
+  #mtext("(a)", side=3, adj=0.05, line=-1.3)
+  mtext("Buffalo heads at Amapa and Pracuuba (IBGE) and LPBR", side=3, line=1, cex=0.8)
+  
+  
+    
+# overall Y label
+mtext("Efetivo de rebanhos (IBGE)", outer=T, side=2)
+
+#---------------------
+#---- Multipanel plot
+
+par(mfrow = c(3, 1), tcl=-0.5)
+par(mai = c(0.2,0.2,0.2,0.2), mar = c(0.5,0.5,0.5,0.5), oma = c(2, 6, 2, 2)) # edit oma to get space for species names
+#par(mai = c(0.1,1,0.1,0.1))
+
+# ESEC Maraca
+plot(ano, popMARACA, ylim=range(c(0, 1200)), xlim=range(c(2007,2017)) , xaxt="n", yaxt="n", pch=19, xlab="Ano", ylab="População de búfalos (média +/- SD)",
+     main="", cex.axis=1, las=1)
+axis(2, seq(0,1200,400), cex.axis=1, font=1, las=1)
+arrows(ano, popMARACA-sdevMARACA, ano, popMARACA+sdevMARACA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popMARACA[order(ano)], xlim=range(ano), ylim=range(popMARACA), pch=16) # linha entre pontos
+mtext("(a)", side=3, adj=0.05, line=-1.3, cex=0.8)
+
+# REBIO Piratuba
+plot(ano, popPIRATUBA, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=19, xlab="Ano", ylab="População de búfalos (média +/- SD)",
+     main="", cex.axis=1, las=1)
+axis(2, seq(0,50000,20000), cex.axis=1, font=1, las=1)
+arrows(ano, popPIRATUBA-sdevPIRATUBA, ano, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
+lines(ano[order(ano)], popPIRATUBA[order(ano)], xlim=range(ano), ylim=range(popPIRATUBA), pch=16) # linha entre pontos
+mtext("(b)", side=3, adj=0.05, line=-1.3, cex=0.8)
+
+# amapa.pracuuba
+plot(year, amapa.pracuuba, ylim=range(c(0, 60000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt = "n",pch=19, cex=0.5,  ylab="", xlab="", cex.axis=1, las=1)
+axis(1, seq(2007,2017,2), cex.axis=1, font=1, las=1)
+axis(2, seq(0,60000,20000), cex.axis=1, font=1, las=1)
+lines(year[order(year)], amapa.pracuuba[order(year)], xlim=range(year), ylim=range(amapa.pracuuba), pch=16) # linha entre pontos
+#lines(year[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=16) # linha entre pontos
+#points(years[order(year)], pracuuba[order(year)], xlim=range(year), ylim=range(pracuuba), pch=2, cex=0.5)
+#lines(year[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=16) # linha entre pontos
+#points(years[order(year)], amapa[order(year)], xlim=range(year), ylim=range(amapa), pch=2, cex=0.5)
+mtext("(c)", side=3, adj=0.05, line=-1.3, cex=0.8)
+
+
+#------------------------
+
+#------------------------
 
 #-------------Estimativa por transecto, SD inter-transectos-----------------
 
