@@ -1,17 +1,18 @@
 
-# Função para estimar população de búfalos em cada setor da REBIO Piratuba
+# Function to estimate buffalo populations in each sector of the protected areas
 
-double.count <- function(x, k, l, z) # argumentos: x=setor da reserva, k e l = tamanho minimo e maximo de grupo, z = área do setor
+double.count <- function(data, k, l, z) # arguments: data=PA or sector, k and l = min and max (range) of group size to be used, z = sector area
 {
-  area.sector <- z
-  buf <- x
-  buf <- subset(buf, grupo_max==0 | grupo_max >= k)
-  buf <- subset(buf, grupo_max <= l)
+  sector.area <- z
+  buf <- data
+  buf <- subset(buf, grp.size==0 | grp.size >= k)
+  buf <- subset(buf, grp.size <= l)
   assign("buf", buf, .GlobalEnv)
-  W <- 300 #as.numeric(buf$Altitude)*6/2 # largura de amostragem em vôo, W = H*w/h
-  area.sampled.m2 <- W*as.numeric(buf$Compriment) # área amostrada (m²)
-  area.sampled.km2 <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
+  #W <- 300 #as.numeric(buf$Altitude)*6/2 # largura de amostragem em vôo, W = H*w/h
+  #area.sampled.m2 <- W*as.numeric(buf$Compriment) # área amostrada (m²)
+  #area.sampled.km2 <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
   #area.sampled.km2 <- 0.45*nrow(buf)
+  area.sampled.km2 <- sum(subunit.area)
   B <- sum(as.numeric(buf$B)) # n groups seen by both observers
   S1 <- sum(as.numeric(buf$S1)) # n groups seen by observer 1
   S2 <- sum(as.numeric(buf$S2)) # n groups seen by observer 2
@@ -21,24 +22,26 @@ double.count <- function(x, k, l, z) # argumentos: x=setor da reserva, k e l = t
   y.1 <- (B+S1+1)
   y.2 <- (B+S2+1)
   y.3 <- (B+1)
-  Y <- ((y.1*y.2)/(y.3))-1 #Y <- (B+S1+1)(B+S2+1) / (B+1) - 1 # estimate of the size of the population (of groups)
+  Y <- ((y.1*y.2)/(y.3))-1 #Y <- (B+S1+1)(B+S2+1) / (B+1) - 1 # estimate of the size of the population (for groups)
   # var.Y <- (S1*S2(B+S1+1)(B+S2+1))/((B+1)^2(B+2)) # variance of Y
-  mean.group.size <- mean(buf$grupo_max[buf$grupo_max!=0]) # mean group size excluding zeros
-  pop.estimate <- Y*mean.group.size # total population in sector
+  mean.grp.size <- mean(buf$grp.size[buf$grp.size!=0]) # mean group size excluding zeros
+  pop.estimate <- Y*mean.grp.size # total population in sector
   pop.density <- pop.estimate/area.sampled.km2
-  total <-pop.density*area.sector
-  assign("total", total, .GlobalEnv) # valor reservado para uso pela função ci.boot
-  ret <- list("População de búfalos" = total, "Densidade (ind/km2)" = pop.density, "Tamanho médio de grupo" = mean.group.size)
+  total <-pop.density*sector.area
+  assign("total", total, .GlobalEnv) # reseve this value for the ci.count function
+  ret <- list("Buffalo populations" = total, "Density (ind/km2)" = pop.density, "Mean group size" = mean.grp.size)
   return(ret)
 }
 
-# Função para calcular intervalo de confiança da estimativa populacional
 
-ci.count <- function(x,k,l,z) # x = setor da reserva, y=dados
+
+# Function to estimate confidence intervals for population estimate
+
+ci.count <- function(data,k,l,z) # data = PA or sector, y=dados
 {
-  bux <- x
-  buf$iboot <- 1:nrow(buf) # criando coluna índice
-  boot.ci <- rep(NA, 10000)    # criando objeto para receber valores de simulação
+  bux <- data
+  buf$iboot <- 1:nrow(buf) # create index column
+  boot.ci <- rep(NA, 10000)    # create object to receive simulation values
   for(i in 1:10000)    # criando contador
   {
   iboot <- sample(1:nrow(buf), replace=TRUE) # gerando vetor de números aleatórios

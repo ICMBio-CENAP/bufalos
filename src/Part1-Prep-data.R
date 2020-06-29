@@ -12,103 +12,23 @@ library(here)
 source(here("src", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
 
 
-##-----3 - Read data and do some stuff -----
-buffalo <- read.csv(here("data", "buffalo.csv"), header=T, sep=",")
-
-names(buffalo)
-
-buffalo <- buffalo[,c(1,2,3,4,7,8,9,10,14,21)]
-names(buffalo) <- c()
-
-# helicopter transects
-buffalo <- subset(buffalo, buffalo$transecto!="ta6cessna" & buffalo$transecto!="ta8cessna" & buffalo$transecto!="tb2cessna" & buffalo$transecto!="tb4cessna" & buffalo$transecto!="tb6cessna" & buffalo$transecto!="tc2cessna" & buffalo$transecto!="tc4cessna" & buffalo$transecto!="tc6cessna" & buffalo$transecto!="tn15cessna")
-buffalo$transecto <- factor(buffalo$transecto)
-
-
+##-----3 - Read data -----
+piratuba <- read.csv(here("data", "piratuba.csv"))
+maraca <- read.csv(here("data", "maraca.csv"))
 
 # comando para criar coluna densidade (observada para o mapa)
 # buffalo$dens.observ <- buffalo$grupo_max/(as.numeric(buffalo$Altitude)*6/2 * as.numeric(buffalo$Compriment) *10^-6)
 
-# remove "water only" subunits
-#buffalo <- subset(buffalo, ambiente!="a")
+##-----4 - Run double count and boot.ci functions -----
 
-# cessna transects
-cessna <- buffalo[which(buffalo$transecto=="ta6cessna"|buffalo$transecto=="ta8cessna"|buffalo$transecto=="tb2cessna"|buffalo$transecto=="tb4cessna"|buffalo$transecto=="tb6cessna"|buffalo$transecto=="tc2cessna"|buffalo$transecto=="tc4cessna"|buffalo$transecto=="tc6cessna"|buffalo$transecto=="tn15cessna"), ]
-cessna$transecto <- factor(cessna$transecto)
-
-# helicopter transects
-buffalo <- subset(buffalo, buffalo$transecto!="ta6cessna" & buffalo$transecto!="ta8cessna" & buffalo$transecto!="tb2cessna" & buffalo$transecto!="tb4cessna" & buffalo$transecto!="tb6cessna" & buffalo$transecto!="tc2cessna" & buffalo$transecto!="tc4cessna" & buffalo$transecto!="tc6cessna" & buffalo$transecto!="tn15cessna")
-buffalo$transecto <- factor(buffalo$transecto)
-
-# piratuba
-piratuba <- subset(buffalo, buffalo$setor == "Piratuba_ Araguari" |buffalo$setor == "Piratuba_Noroeste" |buffalo$setor == "Piratuba_central")
-
-# maraca-jipioca transects (excluding maraca norte)
-maraca <- subset(buffalo, buffalo$setor == "Maraca_sul")
-
-# araguari setor (usando setor como critério)
-araguari.setor <- subset(buffalo, setor=="Piratuba_ Araguari")
-
-# W and NW setor (usando setor como critério)
-w.nw.setor <- subset(buffalo, setor=="Piratuba_Noroeste")
-
-# central setor (usando setor como critério)
-central.setor <- subset(buffalo, setor=="Piratuba_central")
-
-
-# Araguari transects (usando transectos como critério)
-araguari <- subset(buffalo, buffalo$transecto=="tn1"|buffalo$transecto=="tn2"|buffalo$transecto=="tn3"|buffalo$transecto=="tn4"|buffalo$transecto=="tn5"|buffalo$transecto=="tn6"|buffalo$transecto=="tn7"|buffalo$transecto=="tn8"|buffalo$transecto=="tn9"|buffalo$transecto=="tn10"|buffalo$transecto=="tn11"|buffalo$transecto=="tn12"|buffalo$transecto=="tn13"|buffalo$transecto=="tn14"|buffalo$transecto=="tn15"
-                   |buffalo$transecto=="tc1"|buffalo$transecto=="tc2"|buffalo$transecto=="tc3"|buffalo$transecto=="tc4"|buffalo$transecto=="tc5"|buffalo$transecto=="tc6"
-                   |buffalo$transecto=="tz7"|buffalo$transecto=="tz8"|buffalo$transecto=="tz9"|buffalo$transecto=="tz10"|buffalo$transecto=="tz11"|buffalo$transecto=="tz12"
-                   |buffalo$transecto=="a1"|buffalo$transecto=="a2"|buffalo$transecto=="a3"|buffalo$transecto=="a4"|buffalo$transecto=="a5"|buffalo$transecto=="a6"|buffalo$transecto=="a7"|buffalo$transecto=="a8"
-                   |buffalo$transecto=="b1"|buffalo$transecto=="b2"|buffalo$transecto=="b3"|buffalo$transecto=="b4"|buffalo$transecto=="b5"|buffalo$transecto=="b6")
-
-# transects ta1-ta8 and tb1-tb6 may be considered w transects 
-
-# W and NW transects (usando transectos como critério)
-w.nw <- subset(buffalo, buffalo$transecto=="tz1"|buffalo$transecto=="tz2"|buffalo$transecto=="tz3"|buffalo$transecto=="tz4"|buffalo$transecto=="tz5"|buffalo$transecto=="tz6"
-               |buffalo$transecto=="tf1"|buffalo$transecto=="tf2"|buffalo$transecto=="tf3"|buffalo$transecto=="tf4"|buffalo$transecto=="tf5"|buffalo$transecto=="tf6"|buffalo$transecto=="tf7"|buffalo$transecto=="tf8")
-
-
-# Generate spatial distributions ----------------------------------
-library(ggmap)
-
-# Start with provide the lon/lat range of the data
-lon <- range(buffalo$Longitude, na.rm=T)
-lat <- range(buffalo$Latitude, na.rm=T)
-
-buffalo$transec.time <- paste(buffalo$transecto, buffalo$tempo, sep=".")
-
-# Extract the unique lat/lons and put them on a data frame
-locations.buffalo <- unique(cbind(as.character(buffalo$transec.time), buffalo$Latitude,buffalo$Longitude))
-
-locations.buffalo <- data.frame(transec.time = locations.buffalo[,1], Latitude = as.numeric(locations.buffalo[,2]), Longitude = as.numeric(locations.buffalo[,3]))
-
-locations.buffalo <- dplyr::arrange(locations.buffalo, transec.time)
-
-# If you have internet: Download the map from google
-map <- get_map(location = c(c(lon[1],lat[1]),c(lon[2],lat[2])), zoom = 10, source = "google", maptype = "satellite")
-
-# Plot the locations of flight subunits
-ggmap(map, extent = "normal", maprange = T) + geom_point(data=locations.buffalo, aes(x = Longitude, y = Latitude), colour="black", size = 0.1)
-
-# Plot observed densities
-ggmap(map, extent = "normal", maprange = T) + geom_point(data = locations.buffalo, aes(x = Longitude, y = Latitude, color = n), size = 0.5)
-
-# Plot as a surface
-ggmap(map, extent = "device", legend = "topleft")  + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), data = buffalo, geom = "polygon", size = 2, bins = 10, alpha = 0.5)
-
-
-# running double.count and boot.ci
-
-# araguari com buffer 15 km, area.sector <- 1389.26
-# w.nw, area.sector <- 931.878
+#--------------------------------------------------
+# Notes:
+# araguari using 15 km buffer, area.sector <- 1389.26
+# nw, area.sector <- 931.878
 # central, area.sector <- 1601.18
-# maraca sul,  area.sector <- 460.89
-# piratuba exceto central, area.sector <- 3924.69-1601.18 = 2323.51
-
-# Source this file: fuctions double.count and boot.ci to estimate pop size and confidence intervals
-source(paste0(getwd(),"/src/double_count_function.R"))
+# maraca (south island only),  area.sector <- 460.89
+# piratuba minus central, area.sector <- 3924.69-1601.18 = 2323.51
+#--------------------------------------------------
 
 double.count (piratuba, 1,181, 1389.26+931.878+1601.18) # extrapola igualmente para toda a reserva
 ci.count(piratuba,1,181,2323.51)
