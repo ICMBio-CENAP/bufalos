@@ -12,83 +12,91 @@ library(here)
 source(here("src", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
 
 
-##-----3 - Read data-----
-buffalo <- read.csv(here("data", "bufalo.csv"), header=T, sep=",")
+##-----3 - Read data and do some stuff -----
+buffalo <- read.csv(here("data", "buffalo.csv"), header=T, sep=",")
 
+names(buffalo)
+
+buffalo <- buffalo[,c(1,2,3,4,7,8,9,10,14,21)]
+names(buffalo) <- c()
+
+# helicopter transects
+buffalo <- subset(buffalo, buffalo$transecto!="ta6cessna" & buffalo$transecto!="ta8cessna" & buffalo$transecto!="tb2cessna" & buffalo$transecto!="tb4cessna" & buffalo$transecto!="tb6cessna" & buffalo$transecto!="tc2cessna" & buffalo$transecto!="tc4cessna" & buffalo$transecto!="tc6cessna" & buffalo$transecto!="tn15cessna")
+buffalo$transecto <- factor(buffalo$transecto)
 
 
 
 # comando para criar coluna densidade (observada para o mapa)
-# bufalo$dens.observ <- bufalo$grupo_max/(as.numeric(bufalo$Altitude)*6/2 * as.numeric(bufalo$Compriment) *10^-6)
+# buffalo$dens.observ <- buffalo$grupo_max/(as.numeric(buffalo$Altitude)*6/2 * as.numeric(buffalo$Compriment) *10^-6)
 
 # remove "water only" subunits
-#bufalo <- subset(bufalo, ambiente!="a")
+#buffalo <- subset(buffalo, ambiente!="a")
 
 # cessna transects
-cessna <- bufalo[which(bufalo$transecto=="ta6cessna"|bufalo$transecto=="ta8cessna"|bufalo$transecto=="tb2cessna"|bufalo$transecto=="tb4cessna"|bufalo$transecto=="tb6cessna"|bufalo$transecto=="tc2cessna"|bufalo$transecto=="tc4cessna"|bufalo$transecto=="tc6cessna"|bufalo$transecto=="tn15cessna"), ]
+cessna <- buffalo[which(buffalo$transecto=="ta6cessna"|buffalo$transecto=="ta8cessna"|buffalo$transecto=="tb2cessna"|buffalo$transecto=="tb4cessna"|buffalo$transecto=="tb6cessna"|buffalo$transecto=="tc2cessna"|buffalo$transecto=="tc4cessna"|buffalo$transecto=="tc6cessna"|buffalo$transecto=="tn15cessna"), ]
 cessna$transecto <- factor(cessna$transecto)
 
 # helicopter transects
-bufalo <- subset(bufalo, bufalo$transecto!="ta6cessna" & bufalo$transecto!="ta8cessna" & bufalo$transecto!="tb2cessna" & bufalo$transecto!="tb4cessna" & bufalo$transecto!="tb6cessna" & bufalo$transecto!="tc2cessna" & bufalo$transecto!="tc4cessna" & bufalo$transecto!="tc6cessna" & bufalo$transecto!="tn15cessna")
-bufalo$transecto <- factor(bufalo$transecto)
+buffalo <- subset(buffalo, buffalo$transecto!="ta6cessna" & buffalo$transecto!="ta8cessna" & buffalo$transecto!="tb2cessna" & buffalo$transecto!="tb4cessna" & buffalo$transecto!="tb6cessna" & buffalo$transecto!="tc2cessna" & buffalo$transecto!="tc4cessna" & buffalo$transecto!="tc6cessna" & buffalo$transecto!="tn15cessna")
+buffalo$transecto <- factor(buffalo$transecto)
 
 # piratuba
-piratuba <- subset(bufalo, bufalo$setor == "Piratuba_ Araguari" |bufalo$setor == "Piratuba_Noroeste" |bufalo$setor == "Piratuba_central")
+piratuba <- subset(buffalo, buffalo$setor == "Piratuba_ Araguari" |buffalo$setor == "Piratuba_Noroeste" |buffalo$setor == "Piratuba_central")
 
 # maraca-jipioca transects (excluding maraca norte)
-maraca <- subset(bufalo, bufalo$setor == "Maraca_sul")
+maraca <- subset(buffalo, buffalo$setor == "Maraca_sul")
 
 # araguari setor (usando setor como critério)
-araguari.setor <- subset(bufalo, setor=="Piratuba_ Araguari")
+araguari.setor <- subset(buffalo, setor=="Piratuba_ Araguari")
 
 # W and NW setor (usando setor como critério)
-w.nw.setor <- subset(bufalo, setor=="Piratuba_Noroeste")
+w.nw.setor <- subset(buffalo, setor=="Piratuba_Noroeste")
 
 # central setor (usando setor como critério)
-central.setor <- subset(bufalo, setor=="Piratuba_central")
+central.setor <- subset(buffalo, setor=="Piratuba_central")
 
 
 # Araguari transects (usando transectos como critério)
-araguari <- subset(bufalo, bufalo$transecto=="tn1"|bufalo$transecto=="tn2"|bufalo$transecto=="tn3"|bufalo$transecto=="tn4"|bufalo$transecto=="tn5"|bufalo$transecto=="tn6"|bufalo$transecto=="tn7"|bufalo$transecto=="tn8"|bufalo$transecto=="tn9"|bufalo$transecto=="tn10"|bufalo$transecto=="tn11"|bufalo$transecto=="tn12"|bufalo$transecto=="tn13"|bufalo$transecto=="tn14"|bufalo$transecto=="tn15"
-                   |bufalo$transecto=="tc1"|bufalo$transecto=="tc2"|bufalo$transecto=="tc3"|bufalo$transecto=="tc4"|bufalo$transecto=="tc5"|bufalo$transecto=="tc6"
-                   |bufalo$transecto=="tz7"|bufalo$transecto=="tz8"|bufalo$transecto=="tz9"|bufalo$transecto=="tz10"|bufalo$transecto=="tz11"|bufalo$transecto=="tz12"
-                   |bufalo$transecto=="a1"|bufalo$transecto=="a2"|bufalo$transecto=="a3"|bufalo$transecto=="a4"|bufalo$transecto=="a5"|bufalo$transecto=="a6"|bufalo$transecto=="a7"|bufalo$transecto=="a8"
-                   |bufalo$transecto=="b1"|bufalo$transecto=="b2"|bufalo$transecto=="b3"|bufalo$transecto=="b4"|bufalo$transecto=="b5"|bufalo$transecto=="b6")
+araguari <- subset(buffalo, buffalo$transecto=="tn1"|buffalo$transecto=="tn2"|buffalo$transecto=="tn3"|buffalo$transecto=="tn4"|buffalo$transecto=="tn5"|buffalo$transecto=="tn6"|buffalo$transecto=="tn7"|buffalo$transecto=="tn8"|buffalo$transecto=="tn9"|buffalo$transecto=="tn10"|buffalo$transecto=="tn11"|buffalo$transecto=="tn12"|buffalo$transecto=="tn13"|buffalo$transecto=="tn14"|buffalo$transecto=="tn15"
+                   |buffalo$transecto=="tc1"|buffalo$transecto=="tc2"|buffalo$transecto=="tc3"|buffalo$transecto=="tc4"|buffalo$transecto=="tc5"|buffalo$transecto=="tc6"
+                   |buffalo$transecto=="tz7"|buffalo$transecto=="tz8"|buffalo$transecto=="tz9"|buffalo$transecto=="tz10"|buffalo$transecto=="tz11"|buffalo$transecto=="tz12"
+                   |buffalo$transecto=="a1"|buffalo$transecto=="a2"|buffalo$transecto=="a3"|buffalo$transecto=="a4"|buffalo$transecto=="a5"|buffalo$transecto=="a6"|buffalo$transecto=="a7"|buffalo$transecto=="a8"
+                   |buffalo$transecto=="b1"|buffalo$transecto=="b2"|buffalo$transecto=="b3"|buffalo$transecto=="b4"|buffalo$transecto=="b5"|buffalo$transecto=="b6")
 
 # transects ta1-ta8 and tb1-tb6 may be considered w transects 
 
 # W and NW transects (usando transectos como critério)
-w.nw <- subset(bufalo, bufalo$transecto=="tz1"|bufalo$transecto=="tz2"|bufalo$transecto=="tz3"|bufalo$transecto=="tz4"|bufalo$transecto=="tz5"|bufalo$transecto=="tz6"
-               |bufalo$transecto=="tf1"|bufalo$transecto=="tf2"|bufalo$transecto=="tf3"|bufalo$transecto=="tf4"|bufalo$transecto=="tf5"|bufalo$transecto=="tf6"|bufalo$transecto=="tf7"|bufalo$transecto=="tf8")
+w.nw <- subset(buffalo, buffalo$transecto=="tz1"|buffalo$transecto=="tz2"|buffalo$transecto=="tz3"|buffalo$transecto=="tz4"|buffalo$transecto=="tz5"|buffalo$transecto=="tz6"
+               |buffalo$transecto=="tf1"|buffalo$transecto=="tf2"|buffalo$transecto=="tf3"|buffalo$transecto=="tf4"|buffalo$transecto=="tf5"|buffalo$transecto=="tf6"|buffalo$transecto=="tf7"|buffalo$transecto=="tf8")
 
 
 # Generate spatial distributions ----------------------------------
 library(ggmap)
 
 # Start with provide the lon/lat range of the data
-lon <- range(bufalo$Longitude, na.rm=T)
-lat <- range(bufalo$Latitude, na.rm=T)
+lon <- range(buffalo$Longitude, na.rm=T)
+lat <- range(buffalo$Latitude, na.rm=T)
 
-bufalo$transec.time <- paste(bufalo$transecto, bufalo$tempo, sep=".")
+buffalo$transec.time <- paste(buffalo$transecto, buffalo$tempo, sep=".")
 
 # Extract the unique lat/lons and put them on a data frame
-locations.bufalo <- unique(cbind(as.character(bufalo$transec.time), bufalo$Latitude,bufalo$Longitude))
+locations.buffalo <- unique(cbind(as.character(buffalo$transec.time), buffalo$Latitude,buffalo$Longitude))
 
-locations.bufalo <- data.frame(transec.time = locations.bufalo[,1], Latitude = as.numeric(locations.bufalo[,2]), Longitude = as.numeric(locations.bufalo[,3]))
+locations.buffalo <- data.frame(transec.time = locations.buffalo[,1], Latitude = as.numeric(locations.buffalo[,2]), Longitude = as.numeric(locations.buffalo[,3]))
 
-locations.bufalo <- dplyr::arrange(locations.bufalo, transec.time)
+locations.buffalo <- dplyr::arrange(locations.buffalo, transec.time)
 
 # If you have internet: Download the map from google
 map <- get_map(location = c(c(lon[1],lat[1]),c(lon[2],lat[2])), zoom = 10, source = "google", maptype = "satellite")
 
 # Plot the locations of flight subunits
-ggmap(map, extent = "normal", maprange = T) + geom_point(data=locations.bufalo, aes(x = Longitude, y = Latitude), colour="black", size = 0.1)
+ggmap(map, extent = "normal", maprange = T) + geom_point(data=locations.buffalo, aes(x = Longitude, y = Latitude), colour="black", size = 0.1)
 
 # Plot observed densities
-ggmap(map, extent = "normal", maprange = T) + geom_point(data = locations.bufalo, aes(x = Longitude, y = Latitude, color = n), size = 0.5)
+ggmap(map, extent = "normal", maprange = T) + geom_point(data = locations.buffalo, aes(x = Longitude, y = Latitude, color = n), size = 0.5)
 
 # Plot as a surface
-ggmap(map, extent = "device", legend = "topleft")  + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), data = bufalo, geom = "polygon", size = 2, bins = 10, alpha = 0.5)
+ggmap(map, extent = "device", legend = "topleft")  + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), data = buffalo, geom = "polygon", size = 2, bins = 10, alpha = 0.5)
 
 
 # running double.count and boot.ci
@@ -146,7 +154,7 @@ sd(combinado)
 #------------Checando alguns resultados de Tomas et al. 2011---------------------
 
 # densidade media REBIO = 19,6 ind/km2 (regioes noroeste, oeste e sul)
-# população total REBIO = 33354 bufalos
+# população total REBIO = 33354 buffalos
 # 33354/19.6 = 1701.735 km2 = 170173 ha
 # REBIO tem 392469 ha, logo população calculada para 43% da UC (meu calculo é para 59% da UC)
 
@@ -466,7 +474,7 @@ mtext("(c)", side=3, adj=0.05, line=-1.3, cex=0.8)
 
 #-------------Estimativa por transecto, SD inter-transectos-----------------
 
-piratuba <- bufalo[ which(bufalo$setor =="Piratuba_ Araguari"| bufalo$setor=="Piratuba_central"| bufalo$setor=="Piratuba_Noroeste"), ]
+piratuba <- buffalo[ which(buffalo$setor =="Piratuba_ Araguari"| buffalo$setor=="Piratuba_central"| buffalo$setor=="Piratuba_Noroeste"), ]
 x.piratuba <- cbind.data.frame(sort(unique(piratuba$transecto)), rep(NA, length(unique(piratuba$transecto))), rep(NA, length(unique(piratuba$transecto))), rep(NA, length(unique(piratuba$transecto))) )
 colnames(x.piratuba) <- c("transecto", "D", "P.detec", "cover")
 
@@ -482,7 +490,7 @@ levels(piratuba$cover)[levels(piratuba$cover)=="m"] <- 3
 piratuba$cover <- as.numeric(levels(piratuba$cover)[piratuba$cover])
 
 
-maraca <- bufalo[ which(bufalo$setor =="Maraca_sul"), ]
+maraca <- buffalo[ which(buffalo$setor =="Maraca_sul"), ]
 x.maraca <- cbind.data.frame(sort(unique(maraca$transecto)), rep(NA, length(unique(maraca$transecto))) )
 colnames(x.maraca) <- c("transecto", "D")
 
@@ -552,19 +560,19 @@ for(i in 1:nrow(x.maraca))    # criando contador
   x.maraca[i,2] <- pop.density
 }
 
-x.piratuba[is.na(x.piratuba)] <- 0 # transectos com zero bufalos estavam como NA, corrigir isso
+x.piratuba[is.na(x.piratuba)] <- 0 # transectos com zero buffalos estavam como NA, corrigir isso
 piratuba.mean.density <- mean(x.piratuba$D)
 piratuba.pop.TOTAL <- piratuba.mean.density*3924.69 # população mais alta porque zeros foram descartados acima
 # FALTA CALCULAR O SD
 
-x.maraca[is.na(x.maraca)] <- 0 # transectos com zero bufalos estavam como NA, corrigir isso
+x.maraca[is.na(x.maraca)] <- 0 # transectos com zero buffalos estavam como NA, corrigir isso
 maraca.mean.density <- mean(na.omit(x.maraca$D))
 maraca.pop.TOTAL <- maraca.mean.density*460.89
 
 
 #-------------------- COMPARAR TRANSECTOS CESSNA VS HELICOPTERO-----------------------------
 
-teste <- read.table("bufalo_20feb2018.csv", header=T, sep=",")
+teste <- read.table("buffalo_20feb2018.csv", header=T, sep=",")
 cessna <- subset(teste, teste$transecto=="ta6cessna"|teste$transecto=="ta8cessna"|teste$transecto=="tb2cessna"|teste$transecto=="tb4cessna"|teste$transecto=="tb6cessna"|teste$transecto=="tc28cessna"|teste$transecto=="tc4cessna"|teste$transecto=="tc6cessna"|teste$transecto=="tn15cessna")
 nao.cessna <- subset(teste, teste$transecto=="ta6"|teste$transecto=="ta8"|teste$transecto=="tb2"|teste$transecto=="tb4"|teste$transecto=="tb6"|teste$transecto=="tc28"|teste$transecto=="tc4"|teste$transecto=="tc6"|teste$transecto=="tn15")
 
