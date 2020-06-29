@@ -15,7 +15,7 @@ library(here)
 buffalo <- read.csv(here("data", "raw-data.csv"), header=T, sep=",")
 
 # comando para criar coluna densidade (observada para o mapa)
-# buffalo$dens.observ <- buffalo$grupo_max/(as.numeric(buffalo$Altitude)*6/2 * as.numeric(buffalo$Compriment) *10^-6)
+buffalo$observed.density <- buffalo$grupo_max/(as.numeric(buffalo$Altitude)*6/2 * as.numeric(buffalo$Compriment) *10^-6)
 
 ##-----3 - Generate spatial distributions -----
 
@@ -26,7 +26,7 @@ lat <- range(buffalo$Latitude, na.rm=T)
 buffalo$transec.time <- paste(buffalo$transecto, buffalo$tempo, sep=".")
 
 # Extract the unique lat/lons and put them on a data frame
-locations.buffalo <- unique(cbind(as.character(buffalo$transec.time), buffalo$Latitude,buffalo$Longitude))
+locations.buffalo <- unique(cbind(as.character(buffalo$transec.time), buffalo$Latitude, buffalo$Longitude))
 
 locations.buffalo <- data.frame(transec.time = locations.buffalo[,1], Latitude = as.numeric(locations.buffalo[,2]), Longitude = as.numeric(locations.buffalo[,3]))
 

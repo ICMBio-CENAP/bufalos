@@ -19,67 +19,60 @@ library(here)
 piratuba <- read.csv(here("data", "piratuba.csv"))
 araguariTransects <- read.csv(here("data", "araguariTransects.csv"))
 nwTransects <- read.csv(here("data", "nwTransects.csv"))
+maraca <- read.csv(here("data", "maraca.csv"))
 
 
-#-------------Estimativa por transecto, SD inter-transectos-----------------
+##-----4 - Estimate population density using transects as sampling units -----
 
-piratuba <- buffalo[ which(buffalo$setor =="Piratuba_ Araguari"| buffalo$setor=="Piratuba_central"| buffalo$setor=="Piratuba_Noroeste"), ]
-
-x.piratuba <- cbind.data.frame(sort(unique(piratuba$transect)), rep(NA, length(unique(piratuba$transect))), rep(NA, length(unique(piratuba$transect))), rep(NA, length(unique(piratuba$transect))) )
-colnames(x.piratuba) <- c("transect", "D", "P.detec", "cover")
-
-piratuba$cover <- piratuba$ambiente
-unique(piratuba$cover)
-levels(piratuba$cover)[levels(piratuba$cover)=="a"] <- NA
-levels(piratuba$cover)[levels(piratuba$cover)=="ac"] <- NA
-levels(piratuba$cover)[levels(piratuba$cover)=="ca"] <- NA
-levels(piratuba$cover)[levels(piratuba$cover)=="am"] <- NA
-levels(piratuba$cover)[levels(piratuba$cover)=="c"] <- 1
-levels(piratuba$cover)[levels(piratuba$cover)=="cm"] <- 2
-levels(piratuba$cover)[levels(piratuba$cover)=="m"] <- 3
-piratuba$cover <- as.numeric(levels(piratuba$cover)[piratuba$cover])
-
-
-maraca <- buffalo[ which(buffalo$setor =="Maraca_sul"), ]
-x.maraca <- cbind.data.frame(sort(unique(maraca$transecto)), rep(NA, length(unique(maraca$transecto))) )
-colnames(x.maraca) <- c("transecto", "D")
-
-## Piratuba
-
-for(i in 1:length(unique(araguariTransects$transect)))    # criando contador
-{
-	df1 <- subset(araguariTransects, araguariTransects$transect == unique(araguariTransects$transect)[i])
-	#sub.x.piratuba <- subset(piratuba, piratuba$transecto == x.piratuba[i,1])
-	#W <- as.numeric(sub.x.piratuba$Altitude)*6/2 # largura de amostragem em vôo, W = H*w/h
-	#area.sampled.m2 <- W*as.numeric(sub.x.piratuba$Compriment) # área amostrada (m²)
-	#area.sampled.total <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
-	sampled.area <- sum(df1$subunit.area)
-	B <- sum(as.numeric(df1$B)) # n groups seen by both observers
-	S1 <- sum(as.numeric(df1$S1)) # n groups seen by observer 1
-	S2 <- sum(as.numeric(df1$S2)) # n groups seen by observer 2
-	P1 <- sum(df1$B)/(sum(df1$B)+sum(df1$S2)) # detection probability
-	P2 <- sum(df1$B)/(sum(df1$B)+sum(df1$S1))
-	M <- S1*S2/B
-	y.1 <- (B+S1+1)
-	y.2 <- (B+S2+1)
-	y.3 <- (B+1)
-	Y <- (y.1*y.2/y.3)-1
-	mean.grp.size <- mean(df1$grp.size[df1$grp.size!=0]) # mean group size ex.piratubacluding zeros
-	pop.estimate <- Y*mean.grp.size # total population in sector
-	pop.density <- pop.estimate/sampled.area
-	x.piratuba[i,2] <- pop.density
-	x.piratuba[i,3] <- (P1+P2)/2
-	#x.piratuba[i,4] <- mean(df$cover)
+# write as a function
+densEstimate <- function(data, area) {
+	sector.area <- area
+	df1 <- cbind.data.frame(sort(unique(data$transect)), rep(NA, length(unique(data$transect))))
+	colnames(df1) <- c("transect", "D")
+	for(i in 1:nrow(df1))    # counter
+		{
+		df2 <- subset(data, data$transect == df1[i,1])
+		sampled.area <- sum(df2$subunit.area)
+		B <- sum(as.numeric(df2$B)) # n groups seen by both observers
+		S1 <- sum(as.numeric(df2$S1)) # n groups seen by observer 1
+		S2 <- sum(as.numeric(df2$S2)) # n groups seen by observer 2
+		P1 <- sum(df2$B)/(sum(df2$B)+sum(df2$S2)) # detection probability
+		P2 <- sum(df2$B)/(sum(df2$B)+sum(df2$S1))
+		M <- S1*S2/B
+		y.1 <- (B+S1+1)
+		y.2 <- (B+S2+1)
+		y.3 <- (B+1)
+		Y <- (y.1*y.2/y.3)-1
+		mean.grp.size <- mean(df2$grp.size[df2$grp.size!=0]) # mean group size excluding zeros
+		pop.estimate <- Y*mean.grp.size # total population in sector
+		pop.density <- pop.estimate/sampled.area
+		df1[i,2] <- pop.density
+	}
+	df1[is.na(df1)] <- 0 # replace NaN with zeroes
+	total <-mean(df1$D)*sector.area
+	assign("densities", df1, .GlobalEnv)
+	ret <- list("Buffalo population" = total, "Mean density" = mean(df1$D), "SD" = sd(df1$D))
+	return(ret)
 }
 
-View(x.piratuba)
+# run the function
+densEstimate(araguariTransects, 1389.26)
+densEstimate(nwTransects, 931.878)
+densEstimate(piratuba, 2323.51)
+densEstimate(maraca, 460.89)
 
-with(x.piratuba, table(P.detec, cover))
+
+
+#--------------------------------------------
+
+
+
+
 
 # plotting it
-plot(jitter(x.piratuba$cover,2), x.piratuba$P.detec, pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
+plot(jitter(df1$cover,2), df1$P.detec, pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
 
-plot(jitter(x.piratuba$cover,2), x.piratuba$P.detec, ylim=c(0.5,1), pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
+plot(jitter(df1$cover,2), df1$P.detec, ylim=c(0.5,1), pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
 
 # acrescentando fórmula da regressão ao gráfico
 cf <- round(coef(f), 2) # arredondando coeficientes para melhor output
@@ -112,8 +105,8 @@ for(i in 1:nrow(x.maraca))    # criando contador
 	x.maraca[i,2] <- pop.density
 }
 
-x.piratuba[is.na(x.piratuba)] <- 0 # transectos com zero buffalos estavam como NA, corrigir isso
-piratuba.mean.density <- mean(x.piratuba$D)
+df1[is.na(df1)] <- 0 # transectos com zero buffalos estavam como NA, corrigir isso
+piratuba.mean.density <- mean(df1$D)
 piratuba.pop.TOTAL <- piratuba.mean.density*3924.69 # população mais alta porque zeros foram descartados acima
 # FALTA CALCULAR O SD
 

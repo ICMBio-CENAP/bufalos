@@ -65,8 +65,6 @@ araguariTransects <- subset(buffalo, buffalo$transect=="tn1"|buffalo$transect=="
 				   |buffalo$transect=="b1"|buffalo$transect=="b2"|buffalo$transect=="b3"|buffalo$transect=="b4"|buffalo$transect=="b5"|buffalo$transect=="b6")
 write.csv(araguariTransects, here("data", "araguariTransects.csv"), row.names = FALSE)
 
-# transects ta1-ta8 and tb1-tb6 may be considered w transects 
-
 # Northwest
 nwTransects <- subset(buffalo, buffalo$transect=="tz1"|buffalo$transect=="tz2"|buffalo$transect=="tz3"|buffalo$transect=="tz4"|buffalo$transect=="tz5"|buffalo$transect=="tz6"
 			   |buffalo$transect=="tf1"|buffalo$transect=="tf2"|buffalo$transect=="tf3"|buffalo$transect=="tf4"|buffalo$transect=="tf5"|buffalo$transect=="tf6"|buffalo$transect=="tf7"|buffalo$transect=="tf8")
