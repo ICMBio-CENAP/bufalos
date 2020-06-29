@@ -65,10 +65,6 @@ densEstimate(maraca, 460.89)
 
 #--------------------------------------------
 
-
-
-
-
 # plotting it
 plot(jitter(df1$cover,2), df1$P.detec, pch=20, col=1, cex=1, main="Probabilidade de detecção", xlab="Índice de cobertura de vegetação (média por transecto", ylab="Probabilidade de detecção")
 
@@ -81,41 +77,7 @@ eq <- paste0("P = ", cf[1]," + ", abs(cf[2]), "* tamanho do grupo")
 mtext(eq, 3, line=-2)
 
 
-#---------------IDEM para Maraca-------------------
-
-for(i in 1:nrow(x.maraca))    # criando contador
-{
-	sub.x.maraca <- subset(maraca, maraca$transecto == x.maraca[i,1])
-	W <- as.numeric(sub.x.maraca$Altitude)*6/2 # largura de amostragem em vôo, W = H*w/h
-	area.sampled.m2 <- W*as.numeric(sub.x.maraca$Compriment) # área amostrada (m²)
-	area.sampled.total <- sum(na.omit(area.sampled.m2))*10^-6 # area amostrada em km2
-	B <- sum(as.numeric(sub.x.maraca$B)) # n groups seen by both observers
-	S1 <- sum(as.numeric(sub.x.maraca$S1)) # n groups seen by observer 1
-	S2 <- sum(as.numeric(sub.x.maraca$S2)) # n groups seen by observer 2
-	P1 <- sum(sub.x.maraca$B)/(sum(sub.x.maraca$B)+sum(sub.x.maraca$S2)) # detection probability
-	P2 <- sum(sub.x.maraca$B)/(sum(sub.x.maraca$B)+sum(sub.x.maraca$S1))
-	M <- S1*S2/B
-	y.1 <- (B+S1+1)
-	y.2 <- (B+S2+1)
-	y.3 <- (B+1)
-	Y <- (y.1*y.2/y.3)-1
-	mean.group.size <- mean(sub.x.maraca$grupo_max[sub.x.maraca$grupo_max!=0]) # mean group size ex.maracacluding zeros
-	pop.estimate <- Y*mean.group.size # total population in sector
-	pop.density <- pop.estimate/area.sampled.total
-	x.maraca[i,2] <- pop.density
-}
-
-df1[is.na(df1)] <- 0 # transectos com zero buffalos estavam como NA, corrigir isso
-piratuba.mean.density <- mean(df1$D)
-piratuba.pop.TOTAL <- piratuba.mean.density*3924.69 # população mais alta porque zeros foram descartados acima
-# FALTA CALCULAR O SD
-
-x.maraca[is.na(x.maraca)] <- 0 # transectos com zero buffalos estavam como NA, corrigir isso
-maraca.mean.density <- mean(na.omit(x.maraca$D))
-maraca.pop.TOTAL <- maraca.mean.density*460.89
-
-
-#-------------------- COMPARAR TRANSECTOS CESSNA VS HELICOPTERO-----------------------------
+##-----5 - Compare helicopter and cessna transects -----
 
 teste <- read.table("buffalo_20feb2018.csv", header=T, sep=",")
 cessna <- subset(teste, teste$transecto=="ta6cessna"|teste$transecto=="ta8cessna"|teste$transecto=="tb2cessna"|teste$transecto=="tb4cessna"|teste$transecto=="tb6cessna"|teste$transecto=="tc28cessna"|teste$transecto=="tc4cessna"|teste$transecto=="tc6cessna"|teste$transecto=="tn15cessna")
