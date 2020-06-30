@@ -8,7 +8,7 @@
 library(here)
 
 ##----- 2 - Source files-----
-source(here("src", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
+source(here("bin", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
 
 
 ##-----3 - Read data and do some stuff -----
@@ -54,6 +54,7 @@ write.csv(piratuba, here("data", "piratuba.csv"), row.names = FALSE)
 # create maraca-jipioca dataset (excluding maraca norte)
 maraca <- subset(buffalo, buffalo$sector == "Maraca_sul")
 write.csv(maraca, here("data", "maraca.csv"), row.names = FALSE)
+
 
 ##-----5 - create clean datasets using transects as criteria  -----
 

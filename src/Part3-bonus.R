@@ -7,6 +7,9 @@
 # use transects as sampling units to estimate densities and confidence intervals (inter-transect CI and SD)
 # instead of 30-second sub-units as in Part1
 
+# obs: the code is OK, but the allocation of transects to different sectors must be revised on the map
+# I will do this as soon as possible, meanwhile, DO NOT trust in the results from this section
+
 ##----- 1 - Load libraries-----
 library(here)
 #library(ggplot2)

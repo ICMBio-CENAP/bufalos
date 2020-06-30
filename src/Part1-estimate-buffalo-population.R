@@ -8,13 +8,16 @@
 library(here)
 
 ##----- 2 - Source files-----
-source(here("src", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
+source(here("bin", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
 
 
 ##-----3 - Read data -----
 piratuba <- read.csv(here("data", "piratuba.csv"))
 maraca <- read.csv(here("data", "maraca.csv"))
 
+araguari <- subset(piratuba, sector== "araguari")
+nw <- subset(piratuba, sector== "nw")
+central <- subset(piratuba, sector== "central")
 
 ##-----4 - Run double count and boot.ci functions -----
 
@@ -34,17 +37,17 @@ double.count (piratuba, 1,181, 1389.26+931.878+1601.18)
 ci.count(piratuba,1,181,2323.51)
 
 # nw sector
-nw <- subset(piratuba, sector== "nw")
+#nw <- subset(piratuba, sector== "nw")
 double.count (nw, 1,181, 931.878)
 ci.count(nw,1,181,931.878)
 
 # araguari sector
-araguari <- subset(piratuba, sector== "araguari")
+#araguari <- subset(piratuba, sector== "araguari")
 double.count (araguari, 1,181,1389.26)
 ci.count(araguari,1,181, 1389.26)
 
 # central
-central <- subset(piratuba, sector== "central")
+#central <- subset(piratuba, sector== "central")
 double.count (central, 1,181,1601.18)
 ci.count(central,1,181, 1601.18)
 
@@ -60,7 +63,7 @@ ci.count(maraca,1,181,460.89)
 # 2. just running separate estimates and then summing does not generate confidence intervals for the entire reserve 
 
 # do it as a function
-combined.Estimate <- function(){
+combined.Estimate <- function() {
 df1 <- rep(NA, 10000)    # create object to receive simulation values
 araguari$iboot <- 1:nrow(araguari)
 nw$iboot <- 1:nrow(nw)
