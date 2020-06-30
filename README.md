@@ -19,6 +19,6 @@ Aerial counts (double-count technique) conducted in December 2017 by Elildo Carv
 
 
 
-<img src="results/detection.jpeg" title="detection rates" width="500">
+<img src="results/detection.jpg" title="detection rates" width="500">
 
 **Figure 3.** Detection rates
