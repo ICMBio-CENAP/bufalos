@@ -5,6 +5,10 @@ By Elildo Carvalho Jr @ ICMBio/CENAP
 
 Aerial counts (double-count technique) conducted in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
 
+**src** folder has the the code for running the analysis
+**bin** has some functions called by the analysis code 
+**data** and **results** have guess what 
+
 
 
 <img src="results/Fig3 option b.jpeg" title="observed densities" width="500">
