@@ -22,7 +22,11 @@ library(here)
 piratuba <- read.csv(here("data", "piratuba.csv"))
 piratuba$TR <- paste(piratuba$sector, piratuba$transect, sep=".") # to split transects that overlap two different sectors
 araguari <- subset(piratuba, sector == "araguari")
+nw <- subset(piratuba, sector == "nw")
+central <- subset(piratuba, sector == "central")
 
+maraca <- read.csv(here("data", "maraca.csv"))
+maraca$TR <- maraca$transect
 
 ##-----4 - Estimate population density using transects as sampling units -----
 
@@ -60,9 +64,8 @@ densEstimate <- function(data, area) {
 # run the function
 densEstimate(araguari, 1389.26)
 densities
-#densEstimate(araguariTransects, 1389.26)
-#densEstimate(nwTransects, 931.878)
 densEstimate(piratuba, 2323.51)
+
 densEstimate(maraca, 460.89)
 
 
