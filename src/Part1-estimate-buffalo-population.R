@@ -31,8 +31,8 @@ central <- subset(piratuba, sector== "central")
 #--------------------------------------------------
 
 # piratuba
-# this extrapolates for the entire reserve, probably not the best because
-# sites with highest densities (araguari and nw) are ove-represented 
+# this extrapolates for the entire reserve, probably not the best way to do it because
+# sites with highest densities (araguari and nw) are over-represented 
 double.count (piratuba, 1,181, 1389.26+931.878+1601.18)
 ci.count(piratuba,1,181,2323.51)
 

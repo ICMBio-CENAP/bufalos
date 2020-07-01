@@ -20,9 +20,8 @@ library(here)
 
 ##-----3 - Read data -----
 piratuba <- read.csv(here("data", "piratuba.csv"))
-araguariTransects <- read.csv(here("data", "araguariTransects.csv"))
-nwTransects <- read.csv(here("data", "nwTransects.csv"))
-maraca <- read.csv(here("data", "maraca.csv"))
+piratuba$TR <- paste(piratuba$sector, piratuba$transect, sep=".") # to split transects that overlap two different sectors
+araguari <- subset(piratuba, sector == "araguari")
 
 
 ##-----4 - Estimate population density using transects as sampling units -----
@@ -30,11 +29,11 @@ maraca <- read.csv(here("data", "maraca.csv"))
 # write as a function
 densEstimate <- function(data, area) {
 	sector.area <- area
-	df1 <- cbind.data.frame(sort(unique(data$transect)), rep(NA, length(unique(data$transect))))
-	colnames(df1) <- c("transect", "D")
+	df1 <- cbind.data.frame(sort(unique(data$TR)), rep(NA, length(unique(data$TR))))
+	colnames(df1) <- c("TR", "D")
 	for(i in 1:nrow(df1))    # counter
 		{
-		df2 <- subset(data, data$transect == df1[i,1])
+		df2 <- subset(data, data$TR == df1[i,1])
 		sampled.area <- sum(df2$subunit.area)
 		B <- sum(as.numeric(df2$B)) # n groups seen by both observers
 		S1 <- sum(as.numeric(df2$S1)) # n groups seen by observer 1
@@ -59,8 +58,10 @@ densEstimate <- function(data, area) {
 }
 
 # run the function
-densEstimate(araguariTransects, 1389.26)
-densEstimate(nwTransects, 931.878)
+densEstimate(araguari, 1389.26)
+densities
+#densEstimate(araguariTransects, 1389.26)
+#densEstimate(nwTransects, 931.878)
 densEstimate(piratuba, 2323.51)
 densEstimate(maraca, 460.89)
 
