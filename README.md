@@ -5,14 +5,14 @@ By Elildo Carvalho Jr @ ICMBio/CENAP
 
 Aerial counts (double-count technique) conducted in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
 
-**src** folder has the the code for running the analysis
+**src** folder has the code for running the analysis
 
 **bin** has some functions called by the analysis code
 
 **data** and **results** have guess what 
 
 
-To run the codes in your computer, clone the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src code.
+To run the codes in your computer, clone the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src folder.
 
 
 <img src="results/Fig3 option b.jpeg" title="observed densities" width="500">
