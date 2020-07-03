@@ -8,7 +8,7 @@
 library(here)
 
 ##----- 2 - Source files-----
-source(here("bin", "double-count-function.R")) # using package here to build a path to the subdirectory "bin" within "jamari"
+source(here("bin", "double-count-function.R")) # using package here to build a path to the subdirectory "bin"
 
 
 ##-----3 - Read data -----
