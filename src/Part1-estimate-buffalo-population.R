@@ -15,14 +15,22 @@ source(here("bin", "double-count-function.R")) # using package here to build a p
 piratuba <- read.csv(here("data", "piratuba.csv"))
 maraca <- read.csv(here("data", "maraca.csv"))
 
+# split piratuba dataset by sector
 araguari <- subset(piratuba, sector== "araguari")
 nw <- subset(piratuba, sector== "nw")
 central <- subset(piratuba, sector== "central")
 
 ##-----4 - Run double count and boot.ci functions -----
 
+# The double.count and ci.count functions requires three arguments: data, min, max and area
+# data is the dataset, see piratuba.csv and maraca.csv files to see how the data must look like
+# min and max represent the range of group sizes to be included in the estimate
+# e.g., setting min to 1 and max to 10 would limit the estimate to groups with up to 10 individuals
+# to estimate for all group sizes simply use min=1 and max=max(data$grp.size)
+# area is total the area of the protected area or sector for which you want to estimate total population size
+
 #--------------------------------------------------
-# Notes:
+# Notes on the areas used in the estimates:
 # araguari using 15 km buffer, area.sector <- 1389.26
 # nw, area.sector <- 931.878
 # central, area.sector <- 1601.18
@@ -33,27 +41,27 @@ central <- subset(piratuba, sector== "central")
 # piratuba
 # this extrapolates for the entire reserve, probably not the best way to do it because
 # sites with highest densities (araguari and nw) are over-represented 
-double.count (piratuba, 1,181, 1389.26+931.878+1601.18)
-ci.count(piratuba,1,181,2323.51)
+double.count (piratuba, 1,max(piratuba$grp.size), area=1389.26+931.878+1601.18)
+ci.count(piratuba,1,max(piratuba$grp.size),area=2323.51)
 
 # nw sector
 #nw <- subset(piratuba, sector== "nw")
-double.count (nw, 1,181, 931.878)
-ci.count(nw,1,181,931.878)
+double.count (nw, 1,max(nw$grp.size), 931.878)
+ci.count(nw,1,max(nw$grp.size),931.878)
 
 # araguari sector
 #araguari <- subset(piratuba, sector== "araguari")
-double.count (araguari, 1,181,1389.26)
-ci.count(araguari,1,181, 1389.26)
+double.count (araguari, 1,max(araguari$grp.size),1389.26)
+ci.count(araguari,1,max(araguari$grp.size), 1389.26)
 
 # central
 #central <- subset(piratuba, sector== "central")
-double.count (central, 1,181,1601.18)
-ci.count(central,1,181, 1601.18)
+double.count (central, 1,max(central$grp.size),1601.18)
+ci.count(central,1,max(central$grp.size), 1601.18)
 
 # maraca
-double.count (maraca,1,181,460.89)
-ci.count(maraca,1,181,460.89)
+double.count (maraca,1,max(maraca$grp.size),460.89)
+ci.count(maraca,1,max(maraca$grp.size),460.89)
 
 
 ##-----5 - Alternative method: estimate separately for each sector, sum and then bootstrap (n=10000) -----

@@ -38,10 +38,10 @@ source(here("bin", "multiplot.R")) # using package here to build a path to the s
 ##-----3 - Plot temporal trends -----
 
 # Bundle Tomas et al. estimates with novel estimate:
-popPIRATUBA <- c(33354, 31887, 17769)
-popMARACA <- c(641,528,686.51)
+popPIRATUBA <- c(33354, 31887, 17782)
+popMARACA <- c(641,528,691.73)
 sdevPIRATUBA <- c(4680, 3442, 2281.961)
-sdevMARACA <- c(235,187,325.3)
+sdevMARACA <- c(235,187,329.9)
 year <- c(2007, 2013, 2017)
 
 # Bundle trends from IBGE data (efetivo rebanho bubalino IBGE):
@@ -69,10 +69,10 @@ lines(year[order(year)], popMARACA[order(year)], xlim=range(year), ylim=range(po
 
 
 #-----------
-# Make multiplot for trends (Fig 3 for the paper)
+# Make multiplot for trends (Fig 2 for the paper)
 
 # write figure as a function
-fig3 <- function(){
+fig2 <- function(){
 	par(mfrow = c(3, 1), tcl=-0.5)
 	par(mai = c(0.2,0.2,0.2,0.2), mar = c(0.5,0.5,0.5,0.5), oma = c(2, 6, 2, 2)) # edit oma to get space for species names
 	# ESEC Maraca
@@ -81,7 +81,7 @@ fig3 <- function(){
 	axis(2, seq(0,1200,400), cex.axis=1.5, font=1, las=1)
 	arrows(year, popMARACA-sdevMARACA, year, popMARACA+sdevMARACA, length=0.05, angle=90, code=3) # barra de SD
 	lines(year[order(year)], popMARACA[order(year)], xlim=range(year), ylim=range(popMARACA), pch=16) # linha entre pontos
-	mtext("(a)", side=3, adj=0.05, line=-2.5, cex=1.5)
+	mtext("(A)", side=3, adj=0.05, line=-2.5, cex=1.5)
 	
 	# REBIO Piratuba
 	plot(year, popPIRATUBA, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=19, xlab="year", ylab="População de búfalos (média +/- SD)",
@@ -89,7 +89,7 @@ fig3 <- function(){
 	axis(2, seq(0,50000,20000), cex.axis=1.5, font=1, las=1)
 	arrows(year, popPIRATUBA-sdevPIRATUBA, year, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
 	lines(year[order(year)], popPIRATUBA[order(year)], xlim=range(year), ylim=range(popPIRATUBA), pch=16) # linha entre pontos
-	mtext("(b)", side=3, adj=0.05, line=-2.5, cex=1.5)
+	mtext("(B)", side=3, adj=0.05, line=-2.5, cex=1.5)
 	
 	# amapa AND pracuuba and tartarugalzinho
 	plot(yearIBGE, amapa, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=2, cex=0.8,  ylab="", xlab="", cex.axis=0.8, las=1)
@@ -101,63 +101,17 @@ fig3 <- function(){
 	points(yearIBGE[order(yearIBGE)], tartarugalzinho[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(tartarugalzinho), pch=0, cex=0.8)
 	lines(yearIBGE[order(yearIBGE)], tartarugalzinho[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(tartarugalzinho), pch=16, lty=5) # linha entre pontos
 	#legend(2007, 15000, legend=c("Amapa", "Pracuuba", "Tartarugalzinho"), pch=c(2,20,0), lty=c(3,1,5),  cex=0.8, box.lty=0)
-	mtext("(c)", side=3, adj=0.05, line=-2.5, cex=1.5)
+	mtext("(C)", side=3, adj=0.05, line=-2.5, cex=1.5)
 	text(c(2016.7,2016.7,2016.7),c(49695,36293,11290),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
 	#text(c(2016.8,2016.8,2016.8),c(43195,29793,4790),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
 	}
 
 # run it:
-fig3()
+fig2()
 
 # save as jpeg
-jpeg(here("results", "Fig3_test.jpg")) # Open jpeg file
-fig3()
-dev.off()
-
-
-# another version for this figure
-# fig 3 version 2
-fig3v2 <- function() {
-	par(mfrow = c(3, 1), tcl=-0.5)
-	par(mai = c(0.2,0.2,0.2,0.2), mar = c(0.5,0.5,0.5,0.5), oma = c(2, 6, 2, 2)) # edit oma to get space for species names
-
-	# ESEC Maraca
-	plot(year, popMARACA, ylim=range(c(0, 1200)), xlim=range(c(2007,2017)) , xaxt="n", yaxt="n", pch=19, xlab="", ylab="",
-	 main="", cex.axis=2, las=1)
-	axis(2, seq(0,1200,400), cex.axis=2, font=1, las=1)
-	arrows(year, popMARACA-sdevMARACA, year, popMARACA+sdevMARACA, length=0.05, angle=90, code=3) # barra de SD
-	lines(year[order(year)], popMARACA[order(year)], xlim=range(year), ylim=range(popMARACA), pch=16) # linha entre pontos
-	mtext("(a)", side=3, adj=0.05, line=-2.5, cex=1.5)
-
-	# REBIO Piratuba
-	plot(year, popPIRATUBA, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=19, xlab="", ylab="",
-	 main="", cex.axis=2, las=1)
-	axis(2, seq(0,50000,20000), cex.axis=2, font=1, las=1)
-	arrows(year, popPIRATUBA-sdevPIRATUBA, year, popPIRATUBA+sdevPIRATUBA, length=0.05, angle=90, code=3) # barra de SD
-	lines(year[order(year)], popPIRATUBA[order(year)], xlim=range(year), ylim=range(popPIRATUBA), pch=16) # linha entre pontos
-	mtext("(b)", side=3, adj=0.05, line=-2.5, cex=1.5)
-
-	# amapa AND pracuuba and tartarugalzinho
-	plot(yearIBGE, amapa, ylim=range(c(0, 50000)), xlim=range(c(2007,2017)) , xaxt = "n", yaxt ="n", pch=2, cex=0.8,  ylab="", xlab="", las=1)
-	axis(1, seq(2007,2017,2), cex.axis=2, font=1, las=1)
-	axis(2, seq(0,50000,15000), cex.axis=2, font=1, las=1)
-	lines(yearIBGE[order(yearIBGE)], amapa[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(amapa), pch=16, lty=3) # linha entre pontos
-	points(yearIBGE[order(yearIBGE)], pracuuba[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(pracuuba), pch=20, cex=0.8)
-	lines(yearIBGE[order(yearIBGE)], pracuuba[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(pracuuba), pch=16, lty=1) # linha entre pontos
-	points(yearIBGE[order(yearIBGE)], tartarugalzinho[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(tartarugalzinho), pch=0, cex=0.8)
-	lines(yearIBGE[order(yearIBGE)], tartarugalzinho[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(tartarugalzinho), pch=16, lty=5) # linha entre pontos
-	#legend(2007, 15000, legend=c("Amapa", "Pracuuba", "Tartarugalzinho"), pch=c(2,20,0), lty=c(3,1,5),  cex=0.8, box.lty=0)
-	mtext("(c)", side=3, adj=0.05, line=-2.5, cex=1.5)
-	text(c(2016.7,2016.7,2016.7),c(49695,36293,11290),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
-	#text(c(2016.8,2016.8,2016.8),c(43195,29793,4790),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
-	}
-
-# run it:
-fig3v2()
-
-# save as jpeg
-jpeg(here("results", "Fig3_v2.jpg"), width = 600, height = 800) # Open jpeg file
-fig3v2()
+jpeg(here("results", "Fig2.jpg"), width = 700, height = 900) # Open jpeg file
+fig2()
 dev.off()
 
 
