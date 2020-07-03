@@ -15,7 +15,7 @@ Aerial counts (double-count technique) conducted in December 2017 by Elildo Carv
 To run the codes in your computer, clone the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src folder.
 
 
-<img src="results/Fig3 option b.jpeg" title="observed densities" width="500">
+<img src="results/Fig2.jpeg" title="observed densities" width="500">
 
 **Figure 1.** Observed densities of buffalo at Lago Piratuba Biological Reserve, Amapá.
 
