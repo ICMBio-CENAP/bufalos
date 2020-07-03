@@ -20,9 +20,10 @@ araguari <- subset(piratuba, sector== "araguari")
 nw <- subset(piratuba, sector== "nw")
 central <- subset(piratuba, sector== "central")
 
-##-----4 - Run double count and boot.ci functions -----
 
-# The double.count and ci.count functions requires three arguments: data, min, max and area
+##-----4 - Run double count and ci.count functions -----
+
+# The double.count and ci.count functions require three arguments: data, min, max and area
 # data is the dataset, see piratuba.csv and maraca.csv files to see how the data must look like
 # min and max represent the range of group sizes to be included in the estimate
 # e.g., setting min to 1 and max to 10 would limit the estimate to groups with up to 10 individuals
