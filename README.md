@@ -15,13 +15,13 @@ Aerial counts (double-count technique) conducted in December 2017 by Elildo Carv
 To run the codes in your computer, clone the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src folder.
 
 
-<img src="results/Fig2.jpg" title="observed densities" width="500">
+<img src="results/Fig3.jpg" title="observed densities" width="500">
 
 **Figure 1.** Observed densities of buffalo at Lago Piratuba Biological Reserve, Amapá.
 
 
 
-<img src="results/Fig3.jpeg" title="pop trends" width="500">
+<img src="results/Fig2.jpg" title="pop trends" width="500">
 
 **Figure 2.** Population trends: (a) Maracá-Jipioca and (b) Lago Piratuba. Estimates from 2007 and 2013 are from Tomas et al. (2008, 2014). (c) Herd trends for Amapá, Pracuúba and Tartarugalzinho. Data from IBGE.
 
