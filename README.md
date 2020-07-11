@@ -14,6 +14,7 @@ Aerial counts (double-count technique) conducted in December 2017 by Elildo Carv
 
 ```results``` This directory contains results from the analysis such as tables, figures etc. 
 
+
 <img src="results/Fig3.jpg" title="observed densities" width="500">
 
 **Figure 1.** Observed densities of buffalo at Lago Piratuba Biological Reserve and Maracá-Jipioca Ecological Station, Amapá, Brazil.
@@ -41,4 +42,4 @@ If you want to use R and haven't done so before, initial instructions for instal
 4. Clone or download this repository - _green button in top-right of this page_.
 
 # Contact Us
-If you have any questions please contact Elildo Carvalho Jr, <elildojr@gmail.com>.
+If you have any questions please contact <elildojr@gmail.com>.
