@@ -6,7 +6,7 @@ By Elildo Carvalho Jr @ ICMBio/CENAP
 Aerial counts (double-count technique) conducted in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
 
 ### Description
-```src``` folder has the code for running the analysis.
+```src``` This directory has the code for running the analysis.
 
 ```data``` Raw and processed data from aerial surveys. 
 
