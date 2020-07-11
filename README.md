@@ -3,8 +3,7 @@
 Code to analyze data from aerial counts of buffaloes at Lago Piratuba Biological Reserve and Maracá-Jipioca Ecological Station.
 By Elildo Carvalho Jr @ ICMBio/CENAP
 
-Aerial counts (double-count technique) conducted in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.# Amazon-mammals-HMSC
-Files for Carvalho Jr et al. paper, *in prep*.
+Aerial counts (double-count technique) conducted in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
 
 ### Description
 ```src``` folder has the code for running the analysis.
