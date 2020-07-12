@@ -33,7 +33,7 @@ Aerial counts (double-count technique) conducted in December 2017 by Elildo Carv
 
 
 # Getting Started 
-To run the codes in your computer, clone or download the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src folder.
+To run the codes in your computer, clone or download the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in ```src``` folder.
 
 # Setting up R locally
 If you want to use R and haven't done so before, initial instructions for installing R, RStudio and Git (if desired) are below.
