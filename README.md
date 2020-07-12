@@ -33,9 +33,9 @@ Aerial counts (double-count technique) conducted in December 2017 by Elildo Carv
 
 
 # Getting Started 
-To run the codes in your computer, clone the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src folder.
+To run the codes in your computer, clone or download the entire repository and go straigth to *Part1-estimate-buffalo-population.R* in src folder.
 
-# Setting up R Locally
+# Setting up R locally
 If you want to use R and haven't done so before, initial instructions for installing R, RStudio and Git (if desired) are below.
 1. Install R: You can download the latest version of R [here](https://cran.rstudio.com).
 2. Install Rstudio: [Rstudio Download link](https://www.rstudio.com/products/rstudio/download/)
@@ -43,4 +43,4 @@ If you want to use R and haven't done so before, initial instructions for instal
 4. Clone or download this repository - _green button in top-right of this page_.
 
 # Contact Us
-If you have any questions please contact <elildojr@gmail.com>.
+If you have any questions please contact <elildojr@gmail.com>
