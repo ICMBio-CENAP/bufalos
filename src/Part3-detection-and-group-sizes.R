@@ -19,6 +19,7 @@ buffalo <- rbind(piratuba, maraca) # join the two reserves in a single dataframe
 
 ##-----4 - Plot group sizes -----
 
+
 # Function to calculate detection probability for different group sizes
 
 detection <- function(data, min, max) { # function of data and range of group sizes to be estimated
@@ -52,6 +53,9 @@ detection(buffalo,9,9)
 detection(buffalo,10,10)
 detection(buffalo,1,181)
 
+detection(piratuba,1,181)
+detection(maraca,1,181)
+
 # using the detections above to create a vector an then creating a vector of group sizes
 mean.det.probs <- c(0.5552941, 0.6410256, 0.5833333, 0.4875, 0.675, 0.7291667, 0.875, 0.9166667, NA, 0.8333333, 0.8601399)
 group.size <- c(1:11)
@@ -77,4 +81,21 @@ detPLOT()
 jpeg(here("results", "detection.jpg"), width = 600, height = 500) # Open jpeg file
 detPLOT()
 dev.off()
+
+
+# check if detection varies with habitat type
+# detection per habitat type:
+ac <- subset(buffalo, ambiente == "ac")
+am <- subset(buffalo, ambiente == "am")
+c <- subset(buffalo, ambiente == "c")
+ca <- subset(buffalo, ambiente == "ca")
+cm <- subset(buffalo, ambiente == "cm")
+m <- subset(buffalo, ambiente == "m")
+
+dim(ac); detection(ac,1,181)
+dim(am); detection(am,1,181)
+dim(c); detection(c,1,181)
+dim(ca); detection(ca,1,181)
+dim(cm); detection(cm,1,181)
+dim(m); detection(m,1,181)
 

@@ -39,7 +39,7 @@ map <- get_map(location = c(c(lon[1],lat[1]),c(lon[2],lat[2])), zoom = 10, sourc
 ggmap(map, extent = "normal", maprange = T) + geom_point(data=locations.buffalo, aes(x = Longitude, y = Latitude), colour="black", size = 0.1)
 
 # Plot observed densities
-ggmap(map, extent = "normal", maprange = T) + geom_point(data = locations.buffalo, aes(x = Longitude, y = Latitude, color = n), size = 0.5)
+#ggmap(map, extent = "normal", maprange = T) + geom_point(data = locations.buffalo, aes(x = Longitude, y = Latitude, color = densityRange), size = 0.5)
 
 # Plot as a surface
 ggmap(map, extent = "device", legend = "topleft")  + stat_density2d(aes(x = Longitude, y = Latitude, fill = ..level..), data = buffalo, geom = "polygon", size = 2, bins = 10, alpha = 0.5)
