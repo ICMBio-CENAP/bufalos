@@ -102,7 +102,7 @@ fig2 <- function(){
 	lines(yearIBGE[order(yearIBGE)], tartarugalzinho[order(yearIBGE)], xlim=range(yearIBGE), ylim=range(tartarugalzinho), pch=16, lty=5) # linha entre pontos
 	#legend(2007, 15000, legend=c("Amapa", "Pracuuba", "Tartarugalzinho"), pch=c(2,20,0), lty=c(3,1,5),  cex=0.8, box.lty=0)
 	mtext("(C)", side=3, adj=0.05, line=-2.5, cex=1.5)
-	text(c(2016.7,2016.7,2016.7),c(49695,36293,11290),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
+	text(c(2016.5,2016.5,2016.7),c(49695,36293,11290),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
 	#text(c(2016.8,2016.8,2016.8),c(43195,29793,4790),labels=c("Tartarugalzinho", "Amapá","Pracuuba"), cex=1.5)
 	}
 
@@ -111,6 +111,11 @@ fig2()
 
 # save as jpeg
 jpeg(here("results", "Fig2.jpg"), width = 700, height = 900) # Open jpeg file
+fig2()
+dev.off()
+
+# save as tiff
+tiff(here("results", "Figure-2.tiff"), width = 2600, height = 3200, res=300) # Open tiff file
 fig2()
 dev.off()
 
