@@ -1,35 +1,23 @@
 # Buffalo
 
-Code to analyze data from aerial counts of buffaloes at Lago Piratuba Biological Reserve and Maracá-Jipioca Ecological Station.
-By Elildo Carvalho Jr @ ICMBio/CENAP
+Files for Management of Biological Invasions paper *Distribution and abundance of water buffalo populations in eastern Amazonian floodplains* by [Carvalho Jr et al. 2021](https://www.reabic.net/journals/mbi/2021/Accepted/MBI_2021_Carvalho_etal_correctedproof.pdf)
 
-Aerial counts (double-count technique) conducted in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
+Aerial counts (double-count technique) conducted at Lago Piratuba Biological Reserve and Maracá-Jipioca Ecological Station in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
 
 ### Description
-```src``` This directory has the code for running the analysis.
+```src``` Codes for running the analysis.
 
 ```data``` Raw and processed data from aerial surveys. 
 
-```bin``` A bundle of useful codes needed to fix the raw data or functions that are called by the main analysis codes in ```src``` directory.
+```bin``` A bundle of useful codes needed to fix the raw data or functions that are called by the main analysis codes.
 
-```results``` This directory contains results from the analysis such as tables, figures etc. 
+```results``` Results from the analysis such as tables, figures etc. 
 
 #
 
 <img src="results/Fig3.jpg" title="observed densities" width="500">
 
 **Figure 1.** Observed densities of buffalo at Lago Piratuba Biological Reserve and Maracá-Jipioca Ecological Station, Amapá, Brazil.
-
-
-<img src="results/Fig2.jpg" title="pop trends" width="500">
-
-**Figure 2.** Population trends: (a) Maracá-Jipioca and (b) Lago Piratuba. Estimates from 2007 and 2013 are from Tomas et al. (2008, 2014). (c) Herd trends for Amapá, Pracuúba and Tartarugalzinho. Data from IBGE.
-
-
-
-<img src="results/detection.jpg" title="detection rates" width="500">
-
-**Figure 3.** Detection rates
 
 
 # Getting Started 
