@@ -1,6 +1,6 @@
 # Buffalo
 
-Codes used in [Carvalho Jr et al. 2021. Distribution and abundance of water buffalo populations in eastern Amazonian floodplains. Management of Biological Invasions, 12](https://www.reabic.net/journals/mbi/2021/Accepted/MBI_2021_Carvalho_etal_correctedproof.pdf)
+Codes used in the paper [Carvalho Jr et al. 2021. Distribution and abundance of water buffalo populations in eastern Amazonian floodplains. Management of Biological Invasions, 12](https://www.reabic.net/journals/mbi/2021/Accepted/MBI_2021_Carvalho_etal_correctedproof.pdf)
 
 
 ### Description
