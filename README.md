@@ -1,8 +1,7 @@
 # Buffalo
 
-Files for Management of Biological Invasions paper *Distribution and abundance of water buffalo populations in eastern Amazonian floodplains* by [Carvalho Jr et al. 2021](https://www.reabic.net/journals/mbi/2021/Accepted/MBI_2021_Carvalho_etal_correctedproof.pdf)
+Codes used in [Carvalho Jr et al. 2021. Distribution and abundance of water buffalo populations in eastern Amazonian floodplains. Management of Biological Invasions, 12](https://www.reabic.net/journals/mbi/2021/Accepted/MBI_2021_Carvalho_etal_correctedproof.pdf)
 
-Aerial counts (double-count technique) conducted at Lago Piratuba Biological Reserve and Maracá-Jipioca Ecological Station in December 2017 by Elildo Carvalho Jr, Henrique Gonçalves, Iranildo Coutinho and Patricia Pinha.
 
 ### Description
 ```src``` Codes for running the analysis.
