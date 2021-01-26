@@ -23,7 +23,11 @@ double.count <- function(data, min, max, area) # arguments: data = PA or sector,
   y.3 <- (B+1)
   Y <- ((y.1*y.2)/(y.3))-1 #Y <- (B+S1+1)(B+S2+1) / (B+1) - 1 # estimate of the size of the population (for groups)
   # var.Y <- (S1*S2(B+S1+1)(B+S2+1))/((B+1)^2(B+2)) # variance of Y
-  mean.grp.size <- mean(df$grp.size[df$grp.size!=0]) # mean group size excluding zeros
+  if (max(df$grp.size) == 0) {
+    mean.grp.size <- 0
+  } else {
+    mean.grp.size <- mean(df$grp.size[df$grp.size!=0]) # mean group size excluding zeros
+  }
   pop.estimate <- Y*mean.grp.size # total population in sector
   pop.density <- pop.estimate/sampled.area
   total <-pop.density*sector.area
